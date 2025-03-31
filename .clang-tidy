@@ -8,7 +8,27 @@ Checks:          'clang-diagnostic-*,
                   performance-*,
                   readability-*,
                   -readability-braces-around-statement,
-                  -readability-function-size
+                  -readability-function-size,
+                  -readability-identifier-naming.ClassCase,
+                  -readability-identifier-naming.ClassMemberCase,
+                  -readability-identifier-naming.ClassMemberPrefix,
+                  -readability-identifier-naming.ClassMethodCase,
+                  -readability-identifier-naming.ClassConstantCase,
+                  -readability-identifier-naming.ClassConstantPrefix,
+                  -readability-identifier-naming.ClassConstantSuffix,
+                  -readability-identifier-naming.LocalConstantCase,
+                  -readability-identifier-naming.FunctionCase,
+                  -readability-identifier-naming.EnumCase,
+                  -readability-identifier-naming.GlobalConstantCase,
+                  -readability-identifier-naming.LocalVariableCase,
+                  -readability-identifier-naming.ParameterCase,
+                  -readability-identifier-naming.TemplateParameterCase,
+                  -readability-identifier-naming.TemplateParameterPrefix,
+                  -readability-identifier-naming.TypeAliasCase,
+                  -readability-identifier-naming.TypeAliasSuffix,
+                  -readability-identifier-naming.TypedefCase,
+                  -readability-identifier-naming.TypedefSuffix,
+                  -readability-identifier-naming.NamespaceCase
                   '
 
 HeaderFilterRegex: ''
@@ -31,6 +51,46 @@ CheckOptions:
     value:           '10'
   - key:             google-readability-namespace-comments.SpacesBeforeComments
     value:           '2'
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.ClassMemberCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ClassMemberPrefix
+    value:           m_
+  - key:             readability-identifier-naming.ClassMethodCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ClassConstantCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ClassConstantPrefix
+    value:           m_
+  - key:             readability-identifier-naming.ClassConstantSuffix
+    value:           _c
+  - key:             readability-identifier-naming.LocalConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.FunctionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.EnumCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           UPPER_CASE
+  - key:             readability-identifier-naming.LocalVariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterCase
+    value:           camelBack
+  - key:             readability-identifier-naming.TemplateParameterCase
+    value:           camelBack
+  - key:             readability-identifier-naming.TemplateParameterPrefix
+    value:           T
+  - key:             readability-identifier-naming.TypeAliasCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TypeAliasSuffix
+    value:           _t
+  - key:             readability-identifier-naming.TypedefCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TypedefSuffix
+    value:           _t
+  - key:             readability-identifier-naming.NamespaceCase
+    value:           lower_case
   - key:             modernize-loop-convert.MaxCopySize
     value:           '16'
   - key:             modernize-loop-convert.MinConfidence
