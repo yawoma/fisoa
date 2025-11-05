@@ -31,7 +31,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Temporary install of dependencies TODO: To be reviewed
+    # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
       run: |
         sudo apt-get install \
@@ -45,15 +45,15 @@ jobs:
   
     # CMake configure with preset
     - name: Configure CMake
-      working-directory: cpp
+      working-directory: src
       run: cmake --preset clang-deb-ninja
 
     # Build with the preset
     - name: Build
-      working-directory: cpp
+      working-directory: src
       run: cmake --build --preset clang-deb-ninja
 
     # Execute the preset tests
     - name: Test
-      working-directory: cpp
+      working-directory: src
       run: ctest --preset clang-deb-ninja
