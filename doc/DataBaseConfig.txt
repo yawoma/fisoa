@@ -1,0 +1,43 @@
+Table 1 : Client
+    • Firstname
+    • Name
+    • Email
+    • Client ID
+    • Phone number
+    • Address
+    • Gender
+    • Passport ID 
+
+Table 2 : Company 
+    • Name
+    • Company ID
+    • Code ICAO
+    • Code IATA
+    • Callsign
+
+
+Table 3 : Airplane 
+    • uuid 
+    • Airplane model
+    • Number of seats lines
+    • Number of seats colomns
+    • Acquisition date
+
+Table 4 : Flight
+    • Compagnie ID 
+    • uuid
+    • Departure town
+    • Arrival town
+    • Flight ID
+    • Depature date 
+    • Arrival date 
+    • Ecomonic Place Fee
+    • Busyness Place Fee
+
+Table 5 : Booking
+    • Client ID
+    • Client uuid
+    • Flight ID
+    • Booking ID (Timestamp?: reservation date)
+    • Booking cancelation (booleen : true/false)
+    • Seat number
