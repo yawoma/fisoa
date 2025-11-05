@@ -1,0 +1,59 @@
+name: Project Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'First name'
+        required: true
+        default: 'Edem'
+      second_name:
+        description: 'Second name'
+        required: true
+        default: 'Manyo'
+
+env:
+  # TODO: Review CMake build type (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    name: CMake Build
+
+    # Github runner this will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Temporary install of dependencies TODO: To be reviewed
+    - name: Install Dependencies
+      run: |
+        sudo apt-get install \
+          libgl1-mesa-dev \
+          libx11-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxrandr-dev \
+          ninja-build
+  
+    # CMake configure with preset
+    - name: Configure CMake
+      working-directory: cpp
+      run: cmake --preset clang-deb-ninja
+
+    # Build with the preset
+    - name: Build
+      working-directory: cpp
+      run: cmake --build --preset clang-deb-ninja
+
+    # Execute the preset tests
+    - name: Test
+      working-directory: cpp
+      run: ctest --preset clang-deb-ninja
