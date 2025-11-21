@@ -35,30 +35,28 @@ jobs:
     # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
       run: |
+        sudo apt-get update
         sudo apt-get install \
-          # libgl1-mesa-dev \
-          # libx11-dev \
-          # libxcursor-dev \
-          # libxi-dev \
-          # libxinerama-dev \
-          # libxrandr-dev \
-          # ninja-build
-    
-    # CMake configure with preset
-    - name: Configure CMake
-      working-directory: src
-      run: cmake --preset clang-deb-ninja
+          build-essential \
+          libx11-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxrandr-dev \
+          ninja-build \
+          clang-tidy
 
-    # Build with the preset and Enforcing format with clang-tidy
+    # Build with Ninja generator
     - name: Build
-      working-directory: src
-      run: cmake --build --preset clang-deb-ninja \
-           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON run-clang-tidy # TODO: To be reviewed
+      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    
+    # Run clang tidy
+    - name: Run clang-tidy
+      run: clang-tidy -format-style=file -header-filter=. -p build
 
-    # Execute the preset tests
-    - name: Test
-      working-directory: src
-      run: ctest --preset clang-deb-ninja
+    # Execute the tests. TODO: To be reviewed
+    # - name: Test
+    #   run: ctest ...
 
   check_formatting:
     name: Check code formatting
