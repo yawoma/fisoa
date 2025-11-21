@@ -1,0 +1,94 @@
+name: Project Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'First name'
+        required: true
+        default: 'Edem'
+      second_name:
+        description: 'Second name'
+        required: true
+        default: 'Manyo'
+
+env:
+  # TODO: Review CMake build type (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    name: Build
+
+    # Github runner this will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Temporary install of dependencies. TODO: To be reviewed
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install \
+          build-essential \
+          libx11-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxrandr-dev \
+          ninja-build \
+          clang-tidy
+
+    # Build with Ninja generator
+    - name: Build
+      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    
+    # Run clang tidy
+    - name: Run clang-tidy
+      run: clang-tidy -format-style=file -header-filter=. -p build
+
+    # Execute the tests. TODO: To be reviewed
+    # - name: Test
+    #   run: ctest ...
+
+  check_formatting:
+    name: Check code formatting
+
+    # Github runner this will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    # Avoid reinstallation if already installed
+    - name: Cache clang-format dependencies
+      uses: actions/cache@v3
+      with:
+        path: /tmp/apt-cache
+        key: clang-format-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
+        restore-key: |
+          clang-format-${{ runner.os }}-
+    
+    - name: Install clang-format
+      run: |
+        if [ ! -f /tmp/apt-cache/clang-format-18 ]; then
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+          touch /tmp/apt-cache/clang-format-18
+        fi
+    
+    - name: Run clang-format
+      run: |
+        clang-format -style=file src/**/*.cpp src/**/*.h includes/**/*.h
+    
+    - name: Check for unformatted files
+      run: |
+        git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
