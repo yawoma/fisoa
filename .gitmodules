@@ -1,0 +1,6 @@
+[submodule "third-party/SQLiteCpp"]
+	path = third-party/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "third-party/gtest"]
+	path = third-party/gtest
+	url = https://github.com/google/googletest.git
