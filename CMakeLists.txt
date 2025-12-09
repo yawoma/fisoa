@@ -14,6 +14,9 @@ endif()
 # Add SQLiteCpp wrap as submodule
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/SQLiteCpp)
 
+# Add spdlog library
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
+
 add_executable(main src/main.cpp) # executable to be reviewed
 
 target_link_libraries(main 
@@ -21,4 +24,31 @@ target_link_libraries(main
     sqlite3
     pthread
     dl
+    spdlog
 )
+
+# ------------------tests-------------------------- #
+# Set the test build OFF by default. GooleTest will be used
+option(BUILD_TESTS "Build unit tests" OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    include(GoogleTest)
+    add_subdirectory(third_party)
+endif()
+
+# Keep the CMake cache clean and improve IDE integration
+mark_as_advanced(
+    BUILD_GMOCK
+    BUILD_GTEST
+    BUILD_SHARED_LIBS
+    gmock_build_tests
+    gtest_build_samples
+    gtest_build_tests
+    gtest_disable_pthreads
+    gtest_force_shared_crt
+    gtest_hide_internal_symbols
+)
+set_target_properties(gtest PROPERTIES FOLDER third_party)
+set_target_properties(gtest_main PROPERTIES FOLDER third_party)
+set_target_properties(gmock PROPERTIES FOLDER third_party)
+set_target_properties(gmock_main PROPERTIES FOLDER third_party) 
