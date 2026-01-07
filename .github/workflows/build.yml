@@ -67,10 +67,19 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    # Create tmp directory if not exist
+    - name: Create directory
+      run: |
+        if [! -d /tmp/apt-cache ]; then
+          mkdir -p /tmp/apt-cache
+        fi
       
     # Avoid reinstallation if already installed
     - name: Cache clang-format dependencies
       uses: actions/cache@v3
+      # env:
+      #  TMPDIR: ${{ runner.temp }}
       with:
         path: /tmp/apt-cache
         key: clang-format-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
