@@ -71,7 +71,7 @@ jobs:
     # Create tmp directory if not exist
     - name: Create directory
       run: |
-        if [! -d /tmp/apt-cache ]; then
+        if [ ! -d /tmp/apt-cache ]; then
           mkdir -p /tmp/apt-cache
         fi
       
