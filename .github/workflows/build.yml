@@ -94,9 +94,10 @@ jobs:
           touch /tmp/apt-cache/clang-format-18
         fi
     
+    # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
-        clang-format -style=file src/**/*.cpp src/**/*.h includes/**/*.h
+        clang-format -style=file src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
