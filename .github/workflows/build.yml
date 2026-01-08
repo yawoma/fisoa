@@ -88,10 +88,10 @@ jobs:
     
     - name: Install clang-format
       run: |
-        if [ ! -f /tmp/apt-cache/clang-format-22 ]; then
+        if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
           sudo apt-get update
-          sudo apt-get install -y clang-format-22
-          touch /tmp/apt-cache/clang-format-22
+          sudo apt-get install -y clang-format-20
+          touch /tmp/apt-cache/clang-format-20
         fi
     
     # src/**/*.h includes/**/*.h
