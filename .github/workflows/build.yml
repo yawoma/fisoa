@@ -74,10 +74,10 @@ jobs:
         if [ ! -d /tmp/apt-cache ]; then
           mkdir -p /tmp/apt-cache
         fi
-      
+    
     # Avoid reinstallation if already installed
     - name: Cache clang-format dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       # env:
       #  TMPDIR: ${{ runner.temp }}
       with:
@@ -85,7 +85,7 @@ jobs:
         key: clang-format-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
         restore-keys: |
           clang-format-${{ runner.os }}-
-    
+
     - name: Install clang-format
       run: |
         if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
@@ -94,10 +94,19 @@ jobs:
           touch /tmp/apt-cache/clang-format-20
         fi
     
+    # - name: Remove oldest clang-format versions
+    #   uses: actions/delete-package-versions@v5
+    #   with:
+    #     package-name: 'clang-format'
+    #     package-type: 'npm'
+    #     min-versions-to-keep: 1
+    #     delete-only-pre-release-versions: 'true'
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
-        clang-format -style=file src/**/*.cpp
+        clang-format-20 -style=file src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
