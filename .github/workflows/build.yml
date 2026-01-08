@@ -99,10 +99,10 @@ jobs:
       with:
         package-name: 'clang-format'
         package-type: 'npm'
-        min-versions-to-keep: 20
+        min-versions-to-keep: 1
         delete-only-pre-release-versions: 'true'
         token: ${{ secrets.GITHUB_TOKEN }}
-        
+
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
