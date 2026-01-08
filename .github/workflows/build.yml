@@ -75,9 +75,18 @@ jobs:
           mkdir -p /tmp/apt-cache
         fi
       
+    - name: Remove Oldest Clang-format Versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'clang-format'
+          package-name: 'npm'
+          min-versions-to-keep: 20
+          delete-only-pre-release-versions: 'true'
+          token: ${{ secrets.GITHUB_TOKEN }}
+    
     # Avoid reinstallation if already installed
     - name: Cache clang-format dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       # env:
       #  TMPDIR: ${{ runner.temp }}
       with:
@@ -85,7 +94,7 @@ jobs:
         key: clang-format-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
         restore-keys: |
           clang-format-${{ runner.os }}-
-    
+
     - name: Install clang-format
       run: |
         if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
