@@ -93,15 +93,6 @@ jobs:
           sudo apt-get install -y clang-format-20
           touch /tmp/apt-cache/clang-format-20
         fi
-    
-    # - name: Remove oldest clang-format versions
-    #   uses: actions/delete-package-versions@v5
-    #   with:
-    #     package-name: 'clang-format'
-    #     package-type: 'npm'
-    #     min-versions-to-keep: 1
-    #     delete-only-pre-release-versions: 'true'
-    #     token: ${{ secrets.GITHUB_TOKEN }}
 
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
