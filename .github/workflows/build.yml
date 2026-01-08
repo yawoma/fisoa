@@ -74,15 +74,6 @@ jobs:
         if [ ! -d /tmp/apt-cache ]; then
           mkdir -p /tmp/apt-cache
         fi
-      
-    - name: Remove Oldest Clang-format Versions
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: 'clang-format'
-          package-name: 'npm'
-          min-versions-to-keep: 20
-          delete-only-pre-release-versions: 'true'
-          token: ${{ secrets.GITHUB_TOKEN }}
     
     # Avoid reinstallation if already installed
     - name: Cache clang-format dependencies
@@ -103,6 +94,15 @@ jobs:
           touch /tmp/apt-cache/clang-format-20
         fi
     
+    - name: Remove oldest clang-format versions
+      uses: actions/delete-package-versions@v5
+      with:
+        package-name: 'clang-format'
+        package-type: 'npm'
+        min-versions-to-keep: 20
+        delete-only-pre-release-versions: 'true'
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
