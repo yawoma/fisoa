@@ -97,7 +97,7 @@ jobs:
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
-        clang-format-20 -style=file src/**/*.cpp
+        clang-format -style=file src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
