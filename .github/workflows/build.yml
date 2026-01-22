@@ -122,3 +122,23 @@ jobs:
     - name: Check for unformatted files
       run: |
         git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
+  
+  tests_cppcheck:
+    name: Cppcheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          depth: 1
+          submodules: 'recursive'
+      
+      # Run Cppcheck using Bedzior. The most advised one: https://github.com/Bedzior/run-cppcheck
+      - name: Run cppcheck
+        uses: Bedzior/cppcheck-action@v1.0
+        with:
+          enabled checks: all
+          enable inconclusive: true
+          generate report: true
