@@ -69,35 +69,54 @@ jobs:
       uses: actions/checkout@v4
 
     # Create tmp directory if not exist
-    - name: Create directory
-      run: |
-        if [ ! -d /tmp/apt-cache ]; then
-          mkdir -p /tmp/apt-cache
-        fi
+    # - name: Create directory
+    #   run: |
+    #     if [ ! -d /tmp/apt-cache ]; then
+    #       mkdir -p /tmp/apt-cache
+    #     fi
     
     # Avoid reinstallation if already installed
-    - name: Cache clang-format dependencies
+    # - name: Cache clang-format dependencies
+    #   uses: actions/cache@v4
+    #   # env:
+    #   #  TMPDIR: ${{ runner.temp }}
+    #   with:
+    #     path: /tmp/apt-cache
+    #     key: clang-format-20-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
+    #     restore-keys: |
+    #       clang-format-20-${{ runner.os }}-
+    - name: Cache clang-format
       uses: actions/cache@v4
-      # env:
-      #  TMPDIR: ${{ runner.temp }}
       with:
-        path: /tmp/apt-cache
-        key: clang-format-20-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
+        path: |
+          ${{ env.CLANG_HOME }}
+        key: ${{ runner.os }}-clang-format-20-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
-          clang-format-20-${{ runner.os }}-
+            ${{ runner.os }}-clang-format-20-
 
+    # - name: Install clang-format
+    #   run: |
+    #     if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
+    #       sudo apt-get update
+    #       sudo apt-get install -y clang-20
+    #       touch /tmp/apt-cache/clang-format-20
+    #     fi
     - name: Install clang-format
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
-          sudo apt-get update
-          sudo apt-get install -y clang-20
-          touch /tmp/apt-cache/clang-format-20
-        fi
+        sudo apt update
+        sudo apt install -y clang-20
+        export CLANG_HOME="/usr/lib/llvm-20"
+        echo "CLANG_HOME=$CLANG_HOME" >> $GITHUB_ENV
+    
+    - name: Verify clang-format version
+      run: |
+        clang-format-20 --version
 
     # src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
-        clang-format -style=file src/**/*.cpp
+        clang-format-20 -style=file src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
