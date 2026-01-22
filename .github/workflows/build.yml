@@ -17,7 +17,7 @@ on:
         default: 'Manyo'
 
 env:
-  # TODO: Review CMake build type (Release, Debug, RelWithDebInfo, etc.)
+  # To be reviewed (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
@@ -53,15 +53,15 @@ jobs:
       run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     
     # Run clang tidy
-    - name: Run clang-tidy
-      run: clang-tidy -format-style=file -header-filter=. -p build
+    - name: Clang-tidy
+      run: clang-tidy -format-style=file -header-filter=. -p build src/**/*.cpp
 
     # Execute the tests. TODO: To be reviewed
     # - name: Test
     #   run: ctest ...
 
   check_formatting:
-    name: Check code formatting
+    name: Code formatting
 
     # Github runner this will run on
     runs-on: ubuntu-latest
@@ -115,8 +115,8 @@ jobs:
       run: |
         clang-format-20 --version
 
-    # src/**/*.h includes/**/*.h
-    - name: Run clang-format
+    # Run clang-format src/**/*.h includes/**/*.h
+    - name: clang-format
       run: |
         clang-format-20 -style=file src/**/*.cpp
     
