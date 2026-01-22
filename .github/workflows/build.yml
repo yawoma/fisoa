@@ -136,7 +136,7 @@ jobs:
     
     - name: Clang-format version
       run: |
-        clang-format --version
+        clang-format-20 --version
 
     # Run clang-format src/**/*.h includes/**/*.h
     - name: Run clang-format
