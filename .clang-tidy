@@ -32,7 +32,7 @@ Checks:          'clang-diagnostic-*,
                   '
 
 HeaderFilterRegex: ''
-AnalyzeTemporaryDtors: false
+# AnalyzeTemporaryDtors: false
 FormatStyle:     google
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
