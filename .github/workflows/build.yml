@@ -37,8 +37,8 @@ jobs:
     # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install \
           build-essential \
           libx11-dev \
           libxcursor-dev \
@@ -66,12 +66,12 @@ jobs:
       
       - name: Install clang-tidy 20
         run: |
-          sudo apt update
-          sudo apt purge --auto-remove llvm python3-lldb-14 llvm-14 -y
+          sudo apt-get update
+          sudo apt-get purge --auto-remove llvm python3-lldb-14 llvm-14 -y
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
           sudo ./llvm.sh 20
-          sudo apt install -y clang-tidy-20
+          sudo apt-get install -y clang-tidy-20
       
       - name: Clang-tidy version
         run: |
@@ -129,8 +129,8 @@ jobs:
     - name: Install clang-format
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        sudo apt update
-        sudo apt install -y clang-20
+        sudo apt-get update
+        sudo apt-get install -y clang-format-20
         export CLANG_HOME="/usr/lib/llvm-20"
         echo "CLANG_HOME=$CLANG_HOME" >> $GITHUB_ENV
     
