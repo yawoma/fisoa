@@ -137,7 +137,7 @@ jobs:
       
       # Run Cppcheck using Bedzior. The most advised one: https://github.com/Bedzior/run-cppcheck
       - name: Run cppcheck
-        uses: Bedzior/cppcheck-action@v1.1.0
+        uses: bedzior/cppcheck-action@v1.1.0
         with:
           enabled checks: all
           enable inconclusive: true
