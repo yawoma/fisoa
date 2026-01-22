@@ -79,7 +79,7 @@ jobs:
 
       # Run clang tidy
       - name: Clang-tidy
-        run: clang-tidy -format-style=file -header-filter=. -p build src/**/*.cpp
+        run: clang-tidy-20 -format-style=file -header-filter=. -p build src/**/*.cpp
 
   check_formatting:
     name: Clang-format
