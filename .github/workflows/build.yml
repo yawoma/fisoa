@@ -17,7 +17,7 @@ on:
         default: 'Manyo'
 
 env:
-  # TODO: Review CMake build type (Release, Debug, RelWithDebInfo, etc.)
+  # To be reviewed (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
@@ -31,6 +31,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: true
 
     # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
@@ -43,62 +45,98 @@ jobs:
           libxi-dev \
           libxinerama-dev \
           libxrandr-dev \
-          ninja-build \
-          clang-tidy
+          ninja-build
 
     # Build with Ninja generator
     - name: Build
       run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    
-    # Run clang tidy
-    - name: Run clang-tidy
-      run: clang-tidy -format-style=file -header-filter=. -p build
 
     # Execute the tests. TODO: To be reviewed
     # - name: Test
     #   run: ctest ...
+  
+  check_tidy:
+    name: Clang-tidy
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install clang-tidy 20
+        run: |
+          sudo apt-get update
+          sudo apt-get purge --auto-remove llvm python3-lldb-14 llvm-14 -y
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+          sudo apt-get install -y clang-tidy-20
+      
+      - name: Clang-tidy version
+        run: |
+          clang-tidy-20 --version
+
+      # Run clang tidy
+      - name: Run clang-tidy
+        run: clang-tidy-20 -format-style=file -header-filter=. -p build src/**/*.cpp
 
   check_formatting:
-    name: Check code formatting
+    name: Clang-format
 
     # Github runner this will run on
     runs-on: ubuntu-latest
+    env:
+      CLANG_HOME: /usr/bin/llvm-20
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    # Create tmp directory if not exist
-    - name: Create directory
-      run: |
-        if [ ! -d /tmp/apt-cache ]; then
-          mkdir -p /tmp/apt-cache
-        fi
     
-    # Avoid reinstallation if already installed
-    - name: Cache clang-format dependencies
+    - name: Cache clang-format
       uses: actions/cache@v4
-      # env:
-      #  TMPDIR: ${{ runner.temp }}
       with:
-        path: /tmp/apt-cache
-        key: clang-format-20-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
+        path: |
+          ${{ env.CLANG_HOME }}
+        key: ${{ runner.os }}-clang-format-20-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
-          clang-format-20-${{ runner.os }}-
+            ${{ runner.os }}-clang-format-20-
 
-    - name: Install clang-format
+    - name: Install clang-format 20
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
-          sudo apt-get update
-          sudo apt-get install -y clang-20
-          touch /tmp/apt-cache/clang-format-20
-        fi
+        sudo apt-get update
+        sudo apt-get install -y clang-format-20
+        export CLANG_HOME="/usr/lib/llvm-20"
+        echo "CLANG_HOME=$CLANG_HOME" >> $GITHUB_ENV
+    
+    - name: Clang-format version
+      run: |
+        clang-format-20 --version
 
-    # src/**/*.h includes/**/*.h
+    # Run clang-format src/**/*.h includes/**/*.h
     - name: Run clang-format
       run: |
-        clang-format -style=file src/**/*.cpp
+        clang-format-20 -style=file src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
         git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
+  
+  tests_cppcheck:
+    name: Cppcheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      # Run Cppcheck using deep5050: for integration to CI/CD
+      - name: Run cppcheck
+        uses: deep5050/cppcheck-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          enable: style,warning,performance
+          exclude_check: "unusedFunction"
+          inconclusive: true
