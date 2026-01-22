@@ -130,14 +130,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
         with:
           depth: 1
           submodules: 'recursive'
       
       # Run Cppcheck using Bedzior. The most advised one: https://github.com/Bedzior/run-cppcheck
       - name: Run cppcheck
-        uses: bedzior/cppcheck-action@v1.1.0
+        uses: Bedzior/cppcheck-action@v1.0
         with:
           enabled checks: all
           enable inconclusive: true
