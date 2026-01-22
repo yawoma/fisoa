@@ -37,8 +37,8 @@ jobs:
     # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install \
+        sudo apt update
+        sudo apt install \
           build-essential \
           libx11-dev \
           libxcursor-dev \
@@ -78,7 +78,7 @@ jobs:
           clang-tidy-20 --version
 
       # Run clang tidy
-      - name: Clang-tidy
+      - name: Run clang-tidy
         run: clang-tidy-20 -format-style=file -header-filter=. -p build src/**/*.cpp
 
   check_formatting:
@@ -86,6 +86,8 @@ jobs:
 
     # Github runner this will run on
     runs-on: ubuntu-latest
+    env:
+      CLANG_HOME: /usr/bin/llvm-20
 
     steps:
     - name: Checkout repository
@@ -137,7 +139,7 @@ jobs:
         clang-format-20 --version
 
     # Run clang-format src/**/*.h includes/**/*.h
-    - name: clang-format
+    - name: Run clang-format
       run: |
         clang-format-20 -style=file src/**/*.cpp
     
