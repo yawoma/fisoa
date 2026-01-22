@@ -31,6 +31,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: true
 
     # Temporary install of dependencies. TODO: To be reviewed
     - name: Install Dependencies

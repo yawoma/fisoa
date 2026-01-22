@@ -12,7 +12,7 @@ else(CMAKE_CXX_STANDARD LESS 11)
 endif()
 
 # Add SQLiteCpp wrap as submodule
-add_subdirectory(third-party/SQLiteCpp) # ${CMAKE_CURRENT_LIST_DIR}/
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/SQLiteCpp) # 
 
 # Add spdlog library
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
