@@ -92,24 +92,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    # Create tmp directory if not exist
-    # - name: Create directory
-    #   run: |
-    #     if [ ! -d /tmp/apt-cache ]; then
-    #       mkdir -p /tmp/apt-cache
-    #     fi
     
-    # Avoid reinstallation if already installed
-    # - name: Cache clang-format dependencies
-    #   uses: actions/cache@v4
-    #   # env:
-    #   #  TMPDIR: ${{ runner.temp }}
-    #   with:
-    #     path: /tmp/apt-cache
-    #     key: clang-format-20-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
-    #     restore-keys: |
-    #       clang-format-20-${{ runner.os }}-
     - name: Cache clang-format
       uses: actions/cache@v4
       with:
@@ -119,14 +102,7 @@ jobs:
         restore-keys: |
             ${{ runner.os }}-clang-format-20-
 
-    # - name: Install clang-format
-    #   run: |
-    #     if [ ! -f /tmp/apt-cache/clang-format-20 ]; then
-    #       sudo apt-get update
-    #       sudo apt-get install -y clang-20
-    #       touch /tmp/apt-cache/clang-format-20
-    #     fi
-    - name: Install clang-format
+    - name: Install clang-format 20
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
         sudo apt-get update
