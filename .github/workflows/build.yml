@@ -131,11 +131,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        # with:
-        #   depth: 1
-        #   submodules: 'recursive'
       
-      # Run Cppcheck using deep5050: integration to CI/CD
+      # Run Cppcheck using deep5050: for integration to CI/CD
       - name: Run cppcheck
         uses: deep5050/cppcheck-action@main
         with:
