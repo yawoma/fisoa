@@ -17,7 +17,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/SQLiteCpp) #
 # Add spdlog library
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
 
-add_executable(server src/server/main.cpp) # executable name to be reviewed
+add_executable(server server/main.cpp) # executable name to be reviewed
 
 target_link_libraries(server 
     SQLiteCpp
