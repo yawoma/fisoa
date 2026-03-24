@@ -11,20 +11,27 @@ else(CMAKE_CXX_STANDARD LESS 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+# avoid to run nlohmann tests
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+
 # Add SQLiteCpp wrap as submodule
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/SQLiteCpp) # 
 
 # Add spdlog library
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
 
+# Add nlohmann for json
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/nlohmann_json)
+
 add_executable(server server/main.cpp) # executable name to be reviewed
 
-target_link_libraries(server 
+target_link_libraries(server PRIVATE
     SQLiteCpp
     sqlite3
     pthread
     dl
     spdlog
+    nlohmann_json::nlohmann_json
 )
 
 # ------------------tests-------------------------- #
