@@ -23,9 +23,9 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
 # Add nlohmann for json
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/nlohmann_json)
 
-add_executable(server server/main.cpp) # executable name to be reviewed
+add_executable(app src/main.cpp) # executable name to be reviewed
 
-target_link_libraries(server PRIVATE
+target_link_libraries(app PRIVATE
     SQLiteCpp
     sqlite3
     pthread
