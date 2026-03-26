@@ -1,3 +1,6 @@
 # build
 build
+# ide folders
 .vscode
+# cache
+.cache
