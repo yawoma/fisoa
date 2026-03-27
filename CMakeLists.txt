@@ -25,6 +25,11 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/nlohmann_json)
 
 add_executable(app src/main.cpp) # executable name to be reviewed
 
+target_include_directories(app PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+set(INCLUDE_FILES include/model/CustomerData.h)
+target_sources(app PRIVATE ${INCLUDE_FILES})
+
 target_link_libraries(app PRIVATE
     SQLiteCpp
     sqlite3
