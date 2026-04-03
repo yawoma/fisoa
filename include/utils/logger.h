@@ -2,11 +2,16 @@
 #define LOGGER_H
 
 #include "spdlog/logger.h"
-#include <string>
 
+/*Logger wrapper based on spdlog*/
 namespace flog {
-    void set_multi_logger(spdlog::logger& multiLogger);
-    void trace(const std::string& message);
-    void debug(const std::string& message);
+    class Logger{
+        public:
+        static Logger* getInstance();
+        ~Logger();
+
+        private:
+        Logger();
+    };
 } // namespace logger
 #endif // LOGGER_H
