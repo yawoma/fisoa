@@ -23,12 +23,16 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
 # Add nlohmann for json
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/nlohmann_json)
 
-add_executable(app src/main.cpp) # executable name to be reviewed
+# To put app generated alongside build.ninja
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+add_executable(app app/main.cpp) #
 
 target_include_directories(app PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-set(INCLUDE_FILES include/model/CustomerData.h)
-target_sources(app PRIVATE ${INCLUDE_FILES})
+set(INCLUDE_FILES include/model/CustomerData.h include/utils/logger.h)
+set(SRC_FILES src/utils/logger.cpp)
+target_sources(app PRIVATE ${INCLUDE_FILES} ${SRC_FILES})
 
 target_link_libraries(app PRIVATE
     SQLiteCpp
