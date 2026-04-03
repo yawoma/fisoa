@@ -1,14 +1,16 @@
-Table 1 : Client
+Table 1 : Customer
+    • Id
+    • Customer UUID
     • Firstname
     • Name
     • Email
-    • Client ID
     • Phone number
     • Address
     • Gender
     • Passport ID 
 
 Table 2 : Company 
+    • Id
     • Name
     • Company ID
     • Code ICAO
@@ -17,27 +19,28 @@ Table 2 : Company
 
 
 Table 3 : Airplane 
-    • uuid 
+    • Id
+    • Airplane UUID
     • Airplane model
     • Number of seats lines
     • Number of seats colomns
     • Acquisition date
 
 Table 4 : Flight
-    • Compagnie ID 
-    • uuid
+    • Id 
+    • Flight UUID
+    • Company ID 
     • Departure town
     • Arrival town
-    • Flight ID
     • Depature date 
     • Arrival date 
     • Ecomonic Place Fee
     • Busyness Place Fee
 
 Table 5 : Booking
-    • Client ID
-    • Client uuid
-    • Flight ID
+    • Id
+    • Customer UUID
+    • Flight UUID
     • Booking ID (Timestamp?: reservation date)
-    • Booking cancelation (booleen : true/false)
+    • Booking cancelation (bool : true/false)
     • Seat number
