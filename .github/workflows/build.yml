@@ -79,7 +79,7 @@ jobs:
 
       # Run clang tidy
       - name: Run clang-tidy
-        run: clang-tidy-20 -format-style=file -header-filter=. -p build src/*.cpp
+        run: clang-tidy-20 -format-style=file -header-filter=. -p build include/**/*.h src/**/*.cpp
 
   check_formatting:
     name: Clang-format
@@ -114,10 +114,10 @@ jobs:
       run: |
         clang-format-20 --version
 
-    # Run clang-format src/**/*.h includes/**/*.h
+    # Run clang-format
     - name: Run clang-format
       run: |
-        clang-format-20 -style=file src/*.cpp
+        clang-format-20 -style=file include/**/*.h src/**/*.cpp
     
     - name: Check for unformatted files
       run: |
