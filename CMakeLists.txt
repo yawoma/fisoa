@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Fisoa)
+project(Fisoa VERSION 0.1.0 LANGUAGES CXX)
 
 # set c++ std version
 if (NOT CMAKE_CXX_STANDARD)
@@ -30,7 +30,6 @@ add_executable(app app/main.cpp) #
 
 target_include_directories(app PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-set(INCLUDE_FILES include/model/CustomerData.h include/utils/logger.h)
 set(SRC_FILES src/utils/logger.cpp)
 target_sources(app PRIVATE ${INCLUDE_FILES} ${SRC_FILES})
 
@@ -45,26 +44,31 @@ target_link_libraries(app PRIVATE
 
 # ------------------tests-------------------------- #
 # Set the test build OFF by default. GooleTest will be used
-option(BUILD_TESTS "Build unit tests" OFF)
+option(BUILD_TESTS "Build unit tests" ON)
 if(BUILD_TESTS)
-    enable_testing()
+
+    include(CTest)    
     include(GoogleTest)
-    add_subdirectory(third-party)
+    enable_testing()
+
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/gtest)
 
     # Keep the CMake cache clean and improve IDE integration
     mark_as_advanced(
-        BUILD_GMOCK
         BUILD_GTEST
+        BUILD_GMOCK
         BUILD_SHARED_LIBS
-        gmock_build_tests
         gtest_build_samples
         gtest_build_tests
+        gmock_build_tests
         gtest_disable_pthreads
         gtest_force_shared_crt
         gtest_hide_internal_symbols
     )
-    set_target_properties(gtest PROPERTIES FOLDER third-party)
-    set_target_properties(gtest_main PROPERTIES FOLDER third-party)
-    set_target_properties(gmock PROPERTIES FOLDER third-party)
-    set_target_properties(gmock_main PROPERTIES FOLDER third-party) 
+    set_target_properties(gtest PROPERTIES FOLDER tests)
+    set_target_properties(gtest_main PROPERTIES FOLDER tests)
+    set_target_properties(gmock PROPERTIES FOLDER tests)
+    set_target_properties(gmock_main PROPERTIES FOLDER tests)
+
+    add_subdirectory(tests)
 endif()
