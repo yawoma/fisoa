@@ -2,31 +2,44 @@
 #define LOGGER_H
 
 #include "spdlog/logger.h"
+#include <cstdint>
 #include <string>
 
 /*Logger wrapper based on spdlog*/
 namespace flog {
-    enum Level {
-        TRACE = 0,
-        DEBUG = 1
+    ///! Log levels for the logger
+    enum class Level : std::uint8_t {
+        TRACE,
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR,
+        CRITICAL
     };
 
     class Logger{
         public:
         static Logger& getInstance();
-        ~Logger();
-        Logger(const Logger&) = delete; ///< To prevent copy
-        Logger& operator=(const Logger&) = delete; ///< To prevent assignment
-        Logger(Logger&&) = delete; ///< To prevent move
-        Logger& operator=(Logger&&) = delete; ///< To prevent move assignment
+        // ~Logger();
+        // Logger(const Logger&) = delete; ///< To prevent copy
+        // Logger& operator=(const Logger&) = delete; ///< To prevent copy assignment
+        // Logger(Logger&&) = delete; ///< To prevent move
+        // Logger& operator=(Logger&&) = delete; ///< To prevent move assignment
 
-        void trace(const std::string& msg) const;
+        void    set_level(Level level);
+        void trace(const std::string& msg);
+        void debug(const std::string& msg);
+        void info(const std::string& msg);
+        void warn(const std::string& msg);
+        void error(const std::string& msg);
+        void critical(const std::string& msg);
 
         private:
-        void init();
         Logger();
+        void init();
 
-        spdlog::logger m_Logger;
+        ///! The actual spdlog logger instance
+        std::shared_ptr<spdlog::logger> m_Logger;
     };
 } // namespace logger
 #endif // LOGGER_H
