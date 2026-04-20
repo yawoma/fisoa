@@ -2,6 +2,7 @@
 #define LOGGER_H
 
 #include "spdlog/logger.h"
+#include "spdlog/spdlog.h"
 #include <cstdint>
 #include <string>
 
@@ -20,13 +21,17 @@ namespace flog {
     class Logger{
         public:
         static Logger& getInstance();
-        // ~Logger();
-        // Logger(const Logger&) = delete; ///< To prevent copy
-        // Logger& operator=(const Logger&) = delete; ///< To prevent copy assignment
-        // Logger(Logger&&) = delete; ///< To prevent move
-        // Logger& operator=(Logger&&) = delete; ///< To prevent move assignment
+        ~Logger();
+        Logger(const Logger&) = delete; ///< To prevent copy
+        Logger& operator=(const Logger&) = delete; ///< To prevent copy assignment
+        Logger(Logger&&) = delete; ///< To prevent move
+        Logger& operator=(Logger&&) = delete; ///< To prevent move assignment
 
-        void    set_level(Level level);
+        void set_log_file_path(const std::string& logFilePath);
+        void set_level(Level level);
+        
+        std::string get_logger_name() const;
+
         void trace(const std::string& msg);
         void debug(const std::string& msg);
         void info(const std::string& msg);
@@ -38,8 +43,35 @@ namespace flog {
         Logger();
         void init();
 
+        // friend class LoggerTest; ///< Grant access to LoggerTest for testing purposes
+
         ///! The actual spdlog logger instance
         std::shared_ptr<spdlog::logger> m_Logger;
+        std::string m_LogFilePath;
+        std::string m_LoggerName;
     };
+
+    Logger& get_logger();
 } // namespace logger
+
+// Macro definitions for logging with file and line information
+#define FLOG_TRACE(...) \
+    SPDLOG_LOGGER_TRACE(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+#define FLOG_DEBUG(...) \
+    SPDLOG_LOGGER_DEBUG(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+#define FLOG_INFO(...) \
+    SPDLOG_LOGGER_INFO(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+#define FLOG_WARN(...) \
+    SPDLOG_LOGGER_WARN(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+#define FLOG_ERROR(...) \
+    SPDLOG_LOGGER_ERROR(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+#define FLOG_CRITICAL(...) \
+    SPDLOG_LOGGER_CRITICAL(spdlog::get(flog::get_logger().get_logger_name()), "[{}:{}] {}", \
+    __FILE__, __LINE__, ##__VA_ARGS__)
+
 #endif // LOGGER_H
