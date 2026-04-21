@@ -1,8 +1,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "spdlog/logger.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/logger.h>
+#include <spdlog/spdlog.h>
 #include <cstdint>
 #include <string>
 
@@ -30,7 +30,7 @@ namespace flog {
         void set_log_file_path(const std::string& logFilePath);
         void set_level(Level level);
         
-        std::string get_logger_name() const;
+        [[nodiscard]] std::string get_logger_name() const;
 
         void trace(const std::string& msg);
         void debug(const std::string& msg);
@@ -50,9 +50,10 @@ namespace flog {
         std::string m_LogFilePath;
         std::string m_LoggerName;
     };
-
-    Logger& get_logger();
 } // namespace logger
+
+/* Global function to access the logger instance */
+flog::Logger& get_logger();
 
 // Macro definitions for logging with file and line information
 #define FLOG_TRACE(...) \
