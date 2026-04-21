@@ -21,8 +21,8 @@ const int MAX_FILES = 3;    ///< maximum number of file to reach before rotation
 namespace flog
 {
 Logger::Logger()
-    : m_Logger(nullptr), m_LogFilePath(LOG_FILE_DIR.data()),
-      m_LoggerName(LOGGER_NAME.data())
+    : m_logger(nullptr), m_logFilePath(LOG_FILE_DIR.data()),
+      m_loggerName(LOGGER_NAME.data())
 {
     init();
 }
@@ -35,7 +35,7 @@ Logger& Logger::getInstance()
 
 void Logger::set_log_file_path(const std::string& logFilePath)
 {
-    m_LogFilePath = logFilePath;
+    m_logFilePath = logFilePath;
     init();    // Reinitialize the logger with the new file path
 }
 
@@ -44,36 +44,36 @@ void Logger::set_level(Level level)
     switch (level)
     {
         case Level::TRACE:
-            m_Logger->set_level(spdlog::level::trace);
+            m_logger->set_level(spdlog::level::trace);
             break;
         case Level::DEBUG:
-            m_Logger->set_level(spdlog::level::debug);
+            m_logger->set_level(spdlog::level::debug);
             break;
         case Level::INFO:
-            m_Logger->set_level(spdlog::level::info);
+            m_logger->set_level(spdlog::level::info);
             break;
         case Level::ERROR:
-            m_Logger->set_level(spdlog::level::err);
+            m_logger->set_level(spdlog::level::err);
             break;
         case Level::CRITICAL:
-            m_Logger->set_level(spdlog::level::critical);
+            m_logger->set_level(spdlog::level::critical);
             break;
         default:
-            m_Logger->warn(
+            m_logger->warn(
                 "Invalid log level provided: {}. Defaulting to INFO.",
                 static_cast<int>(level));
-            m_Logger->set_level(spdlog::level::info);
+            m_logger->set_level(spdlog::level::info);
             break;
     }
 }
 
-std::string Logger::get_logger_name() const { return m_LoggerName; }
+std::string Logger::get_logger_name() const { return m_loggerName; }
 
 void        Logger::trace(const std::string& msg)
 {
     try
     {
-        m_Logger->trace(msg);
+        m_logger->trace(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -85,7 +85,7 @@ void Logger::debug(const std::string& msg)
 {
     try
     {
-        m_Logger->debug(msg);
+        m_logger->debug(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -97,7 +97,7 @@ void Logger::info(const std::string& msg)
 {
     try
     {
-        m_Logger->info(msg);
+        m_logger->info(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -109,7 +109,7 @@ void Logger::warn(const std::string& msg)
 {
     try
     {
-        m_Logger->warn(msg);
+        m_logger->warn(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -121,7 +121,7 @@ void Logger::error(const std::string& msg)
 {
     try
     {
-        m_Logger->error(msg);
+        m_logger->error(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -133,7 +133,7 @@ void Logger::critical(const std::string& msg)
 {
     try
     {
-        m_Logger->critical(msg);
+        m_logger->critical(msg);
     }
     catch (const spdlog::spdlog_ex& ex)
     {
@@ -153,15 +153,15 @@ void Logger::init()
         auto max_files     = MAX_FILES;
 
         auto file_log      = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            m_LogFilePath, max_file_size, max_files);
+            m_logFilePath, max_file_size, max_files);
         file_log->set_pattern(FILE_PATTERN_DESIGN.data());
         file_log->set_level(spdlog::level::trace);
 
-        m_Logger = std::make_shared<spdlog::logger>(
-            m_LoggerName, spdlog::sinks_init_list{console_log, file_log});
+        m_logger = std::make_shared<spdlog::logger>(
+            m_loggerName, spdlog::sinks_init_list{console_log, file_log});
 
         spdlog::register_logger(
-            m_Logger);    // Register the logger with spdlog to enable macro usage
+            m_logger);    // Register the logger with spdlog to enable macro usage
     }
     catch (const spdlog::spdlog_ex& ex)
     {

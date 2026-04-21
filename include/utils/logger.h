@@ -47,9 +47,9 @@ private:
     void                            init();
 
     ///! The actual spdlog logger instance
-    std::shared_ptr<spdlog::logger> m_Logger;
-    std::string                     m_LogFilePath;
-    std::string                     m_LoggerName;
+    std::shared_ptr<spdlog::logger> m_logger;
+    std::string                     m_logFilePath;
+    std::string                     m_loggerName;
 };
 }    // namespace flog
 
