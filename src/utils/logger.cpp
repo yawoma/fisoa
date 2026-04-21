@@ -25,8 +25,6 @@ Logger::Logger(): m_LogFilePath(LOG_FILE_DIR.data()), m_LoggerName(LOGGER_NAME.d
     init();
 }
 
-Logger::~Logger() = default;
-
 Logger& Logger::getInstance()
 {
     static Logger instance;

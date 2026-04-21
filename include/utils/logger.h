@@ -24,7 +24,7 @@ class Logger
 {
 public:
     static Logger& getInstance();
-    ~Logger();
+    ~Logger()                        = default;
     Logger(const Logger&)            = delete;    ///< To prevent copy
     Logger& operator=(const Logger&) = delete;    ///< To prevent copy assignment
     Logger(Logger&&)                 = delete;    ///< To prevent move
