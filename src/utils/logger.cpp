@@ -20,7 +20,9 @@ const int MAX_FILES = 3;    ///< maximum number of file to reach before rotation
 
 namespace flog
 {
-Logger::Logger(): m_LogFilePath(LOG_FILE_DIR.data()), m_LoggerName(LOGGER_NAME.data())
+Logger::Logger()
+    : m_Logger(nullptr), m_LogFilePath(LOG_FILE_DIR.data()),
+      m_LoggerName(LOGGER_NAME.data())
 {
     init();
 }
