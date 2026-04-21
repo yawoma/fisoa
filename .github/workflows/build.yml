@@ -49,7 +49,13 @@ jobs:
 
     # Build with Ninja generator
     - name: Build
-      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
+    
+    - name: Upload compile_commands.json
+      uses: actions/upload-artifact@v4
+      with:
+        name: compile_commands
+        path: build/compile_commands.json
 
     # Execute the tests. TODO: To be reviewed
     # - name: Test
@@ -79,7 +85,8 @@ jobs:
 
       # Run clang tidy
       - name: Run clang-tidy
-        run: clang-tidy-20 -format-style=file -header-filter=. -p build include/**/*.h src/**/*.cpp
+        run: |
+          clang-tidy-20 -format-style=file -header-filter=. -p build include/**/*.h src/**/*.cpp tests/*.cpp
 
   check_formatting:
     name: Clang-format
@@ -117,7 +124,7 @@ jobs:
     # Run clang-format
     - name: Run clang-format
       run: |
-        clang-format-20 -style=file include/**/*.h src/**/*.cpp
+        clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/*.cpp -i
     
     - name: Check for unformatted files
       run: |
