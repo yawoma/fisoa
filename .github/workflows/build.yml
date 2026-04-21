@@ -48,8 +48,12 @@ jobs:
           ninja-build
 
     # Build with Ninja generator
-    - name: Build
-      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
+    - name: Configure CMake with Ninja
+      run: |
+        cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
+    
+    - name: Build with Ninja
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
     
     - name: Upload compile_commands.json
       uses: actions/upload-artifact@v4
