@@ -64,6 +64,7 @@ jobs:
   check_tidy:
     name: Clang-tidy
 
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -82,6 +83,12 @@ jobs:
       - name: Clang-tidy version
         run: |
           clang-tidy-20 --version
+      
+      - name: Download Compilation Database
+        uses: actions/download-artifact@v4
+        with:
+          name: compile_commands
+          path: build
 
       # Run clang tidy
       - name: Run clang-tidy
