@@ -49,7 +49,7 @@ jobs:
 
     # Build with Ninja generator
     - name: Build
-      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
     
     - name: Upload compile_commands.json
       uses: actions/upload-artifact@v4
