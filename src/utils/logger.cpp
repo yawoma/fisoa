@@ -1,9 +1,9 @@
 #include "utils/logger.h"
 
-#include "spdlog/common.h"
-#include "spdlog/logger.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/common.h>
+#include <spdlog/logger.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -142,8 +142,8 @@ namespace flog {
         }
         
     }
-
-    Logger& get_logger() {
-        return Logger::getInstance();
-    }
 } // namespace flog
+
+flog::Logger& get_logger() {
+        return flog::Logger::getInstance();
+}
