@@ -2,35 +2,17 @@
 Checks:          'clang-analyzer-*,
                   cppcoreguidelines-*,
                   modernize-*,
-                  -modernize-use-trailing-return-type,
                   misc-*,
                   performance-*,
                   readability-*,
+                  -modernize-use-trailing-return-type,
                   -readability-braces-around-statement,
                   -readability-function-size,
-                  -readability-identifier-naming.ClassCase,
-                  -readability-identifier-naming.ClassMemberCase,
-                  -readability-identifier-naming.ClassMemberPrefix,
-                  -readability-identifier-naming.ClassMethodCase,
-                  -readability-identifier-naming.ClassConstantCase,
-                  -readability-identifier-naming.ClassConstantPrefix,
-                  -readability-identifier-naming.ClassConstantSuffix,
-                  -readability-identifier-naming.LocalConstantCase,
-                  -readability-identifier-naming.FunctionCase,
-                  -readability-identifier-naming.EnumCase,
-                  -readability-identifier-naming.GlobalConstantCase,
-                  -readability-identifier-naming.LocalVariableCase,
-                  -readability-identifier-naming.ParameterCase,
-                  -readability-identifier-naming.TemplateParameterCase,
-                  -readability-identifier-naming.TemplateParameterPrefix,
-                  -readability-identifier-naming.TypeAliasCase,
-                  -readability-identifier-naming.TypeAliasSuffix,
-                  -readability-identifier-naming.TypedefCase,
-                  -readability-identifier-naming.TypedefSuffix,
-                  -readability-identifier-naming.NamespaceCase
+                  -readability-identifier-naming,
+                  -readability-convert-member-functions-to-static
                   '
 
-HeaderFilterRegex: ''
+HeaderFilterRegex: '.*internal.*'
 FormatStyle:     google
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
