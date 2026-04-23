@@ -27,6 +27,6 @@ target_link_libraries(fisoa_lib
         sqlite3
         pthread
         dl
-        spdlog::spdlog
+        spdlog
         nlohmann_json::nlohmann_json
 )
