@@ -33,7 +33,7 @@ add_executable(app app/main.cpp) #
 add_subdirectory(src)
 
 target_link_libraries(app 
-    PRIVATE
+    PUBLIC
         fisoa_lib
 )
 
