@@ -22,7 +22,7 @@ target_include_directories(fisoa_lib
 )
 
 target_link_libraries(fisoa_lib 
-    PRIVATE
+    PUBLIC
         SQLiteCpp
         sqlite3
         pthread
