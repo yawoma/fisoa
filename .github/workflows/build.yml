@@ -94,10 +94,10 @@ jobs:
           name: compile_commands
           path: build
 
-      # Run clang tidy # -header-filter=.* include/**/*.h
+      # Run clang tidy # -header-filter=.*
       - name: Run clang-tidy
         run: |
-          clang-tidy-20 -format-style=file -header-filter=.* -p build src/**/*.cpp 
+          clang-tidy-20 -format-style=file -p build src/**/*.cpp 
           
 
   check_formatting:
