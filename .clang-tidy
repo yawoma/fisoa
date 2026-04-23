@@ -12,7 +12,8 @@ Checks:          'clang-analyzer-*,
                   -readability-convert-member-functions-to-static
                   '
 
-HeaderFilterRegex: '.*internal.*'
+HeaderFilterRegex: 'src/.*'
+ExcludeHeaderFilterRegex: 'third-party/spdlog/.*'
 FormatStyle:     google
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
