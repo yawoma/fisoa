@@ -17,13 +17,13 @@ endif()
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 # Add SQLiteCpp wrap as submodule
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/SQLiteCpp) # 
+add_subdirectory(third-party/SQLiteCpp) # ${CMAKE_CURRENT_LIST_DIR}/
 
 # Add spdlog library
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/spdlog)
+add_subdirectory(third-party/spdlog) #${CMAKE_CURRENT_LIST_DIR}/
 
 # Add nlohmann for json
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/nlohmann_json)
+add_subdirectory(third-party/nlohmann_json)
 
 # To put app generated alongside build.ninja
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -46,7 +46,7 @@ if(BUILD_TESTS)
     include(GoogleTest)
     enable_testing()
 
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/third-party/gtest)
+    add_subdirectory(third-party/gtest)
 
     # Keep the CMake cache clean and improve IDE integration
     mark_as_advanced(
