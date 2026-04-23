@@ -25,6 +25,8 @@ add_subdirectory(third-party/spdlog) #${CMAKE_CURRENT_LIST_DIR}/
 # Add nlohmann for json
 add_subdirectory(third-party/nlohmann_json)
 
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
+
 # To put app generated alongside build.ninja
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
