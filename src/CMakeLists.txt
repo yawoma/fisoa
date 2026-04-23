@@ -22,11 +22,11 @@ target_include_directories(fisoa_lib
 )
 
 target_link_libraries(fisoa_lib 
-    PUBLIC
+    PRIVATE
         SQLiteCpp
         sqlite3
         pthread
         dl
-        spdlog
+        spdlog::spdlog
         nlohmann_json::nlohmann_json
 )
