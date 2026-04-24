@@ -96,7 +96,7 @@ jobs:
       
       - name: Verify compile_commands.json paths
         run: |
-            cat compile_commands.json | jq -r '.[].file' | while read file; do
+            cat build/compile_commands.json | jq -r '.[].file' | while read file; do
               if [ ! -f "$file" ]; then
                 echo "Missing file: $file"
                 exit 1
