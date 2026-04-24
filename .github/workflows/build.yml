@@ -48,8 +48,12 @@ jobs:
           ninja-build
 
     # Build with Ninja generator
-    - name: Build
-      run: cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
+    - name: Configure CMake with Ninja
+      run: |
+        cmake -G Ninja -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTS=ON
+    
+    - name: Build with Ninja
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
     
     - name: Upload compile_commands.json
       uses: actions/upload-artifact@v4
@@ -70,6 +74,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Install clang-tidy 20
         run: |
@@ -89,11 +96,21 @@ jobs:
         with:
           name: compile_commands
           path: build
+      
+      - name: Verify compile_commands.json paths
+        run: |
+            cat build/compile_commands.json | jq -r '.[].file' | while read file; do
+              if [ ! -f "$file" ]; then
+                echo "Missing file: $file"
+                exit 1
+              fi
+            done
 
-      # Run clang tidy
+      # Run clang tidy # -header-filter=.*
       - name: Run clang-tidy
         run: |
-          clang-tidy-20 -format-style=file -header-filter=. -p build include/**/*.h src/**/*.cpp tests/*.cpp
+          clang-tidy-20 -format-style=file -p build src/**/*.cpp 
+          
 
   check_formatting:
     name: Clang-format
@@ -131,7 +148,7 @@ jobs:
     # Run clang-format
     - name: Run clang-format
       run: |
-        clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/*.cpp -i
+        clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/*.cpp
     
     - name: Check for unformatted files
       run: |

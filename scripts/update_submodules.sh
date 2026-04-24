@@ -4,7 +4,7 @@
 git stash
 
 # Fetch and update submodules to the latest commit on their respective tags
-git submodules updates --remote
+git submodule update --remote
 
 # Iterate over each submodule and ensure it's on the correct tag
 git submodule foreach --recursive 'git describe --tags --abbrev=0'
