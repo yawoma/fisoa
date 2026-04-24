@@ -74,6 +74,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT }}
       
       - name: Install clang-tidy 20
         run: |
