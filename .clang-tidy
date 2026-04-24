@@ -13,7 +13,7 @@ Checks:          'clang-analyzer-*,
                   '
 
 HeaderFilterRegex: 'src/.*'
-ExcludeHeaderFilterRegex: '*spdlog/[^f].*'
+ExcludeHeaderFilterRegex: '.*spdlog/[^f].*'
 FormatStyle:     google
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
