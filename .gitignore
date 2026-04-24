@@ -1,12 +1,6 @@
 # build
 build
-<<<<<<< Updated upstream
 # ide folders
 .vscode
 # cache
-=======
-# ide dir
-.vscode
-# lib cache
->>>>>>> Stashed changes
 .cache
