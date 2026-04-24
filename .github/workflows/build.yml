@@ -148,7 +148,7 @@ jobs:
     # Run clang-format
     - name: Run clang-format
       run: |
-        clang-format-20 -style=file include/**/*.h src/**/*.cpp
+        clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/*.cpp
     
     - name: Check for unformatted files
       run: |
