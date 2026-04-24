@@ -93,6 +93,15 @@ jobs:
         with:
           name: compile_commands
           path: build
+      
+      - name: Verify compile_commands.json paths
+        run: |
+            cat compile_commands.json | jq -r '.[].file' | while read file; do
+              if [ ! -f "$file" ]; then
+                echo "Missing file: $file"
+                exit 1
+              fi
+            done
 
       # Run clang tidy # -header-filter=.*
       - name: Run clang-tidy
