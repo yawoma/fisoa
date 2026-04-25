@@ -1,11 +1,15 @@
 #to get the include files and add them to the lib target
 set(INCLUDE_FILES 
     ${CMAKE_SOURCE_DIR}/include/utils/logger.h
+    ${CMAKE_SOURCE_DIR}/include/model/customer_data_access.h
+    ${CMAKE_SOURCE_DIR}/include/utils/database_path.h
 )
 
 #to get the source files and add them to the lib target
 set(SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/utils/logger.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/model/customer_data_access.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/database_path.cpp
 )
 
 #Create a library target for the source files
