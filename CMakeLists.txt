@@ -13,14 +13,17 @@ else(CMAKE_CXX_STANDARD LESS 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+# get the current list dir
+add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+
 # avoid to run nlohmann tests
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 # Add SQLiteCpp wrap as submodule
-add_subdirectory(third-party/SQLiteCpp) # ${CMAKE_CURRENT_LIST_DIR}/
+add_subdirectory(third-party/SQLiteCpp) #
 
 # Add spdlog library
-add_subdirectory(third-party/spdlog) #${CMAKE_CURRENT_LIST_DIR}/
+add_subdirectory(third-party/spdlog) #
 
 # Add nlohmann for json
 add_subdirectory(third-party/nlohmann_json)
