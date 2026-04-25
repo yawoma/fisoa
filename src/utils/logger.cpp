@@ -152,8 +152,11 @@ void Logger::init()
         auto max_file_size = FILE_MAX_SIZE;
         auto max_files     = MAX_FILES;
 
+        // redefine the log file path to be relative to the source directory
+        std::string log_file_path = std::string(SOURCE_DIR) + "/" + m_logFilePath;
+
         auto file_log      = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            m_logFilePath, max_file_size, max_files);
+            log_file_path, max_file_size, max_files);
         file_log->set_pattern(FILE_PATTERN_DESIGN.data());
         file_log->set_level(spdlog::level::trace);
 
