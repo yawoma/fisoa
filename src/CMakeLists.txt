@@ -2,14 +2,14 @@
 set(INCLUDE_FILES 
     ${CMAKE_SOURCE_DIR}/include/utils/logger.h
     ${CMAKE_SOURCE_DIR}/include/model/customer_data_access.h
-    ${CMAKE_SOURCE_DIR}/include/utils/database_path.h
+    ${CMAKE_SOURCE_DIR}/include/utils/database.h
 )
 
 #to get the source files and add them to the lib target
 set(SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/utils/logger.cpp
     ${CMAKE_CURRENT_LIST_DIR}/model/customer_data_access.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/database_path.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/utils/database.cpp
 )
 
 #Create a library target for the source files
@@ -32,5 +32,4 @@ target_link_libraries(fisoa_lib
         pthread
         dl
         spdlog::spdlog
-        nlohmann_json::nlohmann_json
 )

@@ -16,17 +16,11 @@ endif()
 # get the current list dir
 add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
-# avoid to run nlohmann tests
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-
 # Add SQLiteCpp wrap as submodule
 add_subdirectory(third-party/SQLiteCpp) #
 
 # Add spdlog library
 add_subdirectory(third-party/spdlog) #
-
-# Add nlohmann for json
-add_subdirectory(third-party/nlohmann_json)
 
 set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 
