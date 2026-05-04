@@ -12,7 +12,7 @@ target_link_libraries(app_utests
   PRIVATE
     gmock_main
     spdlog::spdlog
-    fisoa_lib
+    fisoa
 )
 
 # Register tests with CMake/CTest and automatically parses test cases 
