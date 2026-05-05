@@ -45,6 +45,7 @@ jobs:
           libxi-dev \
           libxinerama-dev \
           libxrandr-dev \
+          uuid-dev \
           ninja-build
 
     # Build with Ninja generator
