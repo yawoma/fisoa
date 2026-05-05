@@ -4,3 +4,5 @@ build
 .vscode
 # cache
 .cache
+# don't take the log files
+logs
