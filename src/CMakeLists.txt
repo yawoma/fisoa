@@ -12,24 +12,37 @@ set(SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/utils/database.cpp
 )
 
-#Create a library target for the source files
-add_library(fisoa_lib STATIC "")
+#Create an interface library for stduuid
+add_library(stduuid INTERFACE)
+target_include_directories(stduuid 
+    INTERFACE 
+        ${CMAKE_SOURCE_DIR}/third-party/stduuid/include
+)
+target_link_libraries(stduuid 
+    INTERFACE 
+        uuid
+)
 
-target_sources(fisoa_lib 
+
+#Create a library target for the source files
+add_library(fisoa STATIC "")
+
+target_sources(fisoa 
     PRIVATE ${SRC_FILES} 
     PUBLIC ${INCLUDE_FILES}
 )
 
-target_include_directories(fisoa_lib 
+target_include_directories(fisoa
     PUBLIC 
         ${CMAKE_SOURCE_DIR}/include
 )
 
-target_link_libraries(fisoa_lib 
+target_link_libraries(fisoa
     PUBLIC
         SQLiteCpp
         sqlite3
         pthread
         dl
         spdlog::spdlog
+        stduuid
 )
