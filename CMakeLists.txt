@@ -13,6 +13,9 @@ else(CMAKE_CXX_STANDARD LESS 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+# Set the cmake module dir
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 # get the current list dir
 add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -33,7 +36,7 @@ add_subdirectory(src)
 
 target_link_libraries(app 
     PUBLIC
-        fisoa_lib
+        fisoa
 )
 
 # ------------------tests-------------------------- #
