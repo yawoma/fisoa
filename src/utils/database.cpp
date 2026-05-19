@@ -32,6 +32,11 @@ bool create_database_directory()
     return true; // Directory already exists
 }
 
+std::string get_database_path()
+{
+    return std::string(SOURCE_DIR) + "/data/fisoa.db3";
+}
+
 namespace uuid {
     std::string generate() {
         return uuids::to_string(uuids::uuid_system_generator{}());
