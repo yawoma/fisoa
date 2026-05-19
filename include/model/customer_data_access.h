@@ -5,7 +5,7 @@
 #include <vector>
 #include <SQLiteCpp/SQLiteCpp.h>
 
-class Customer;
+struct Customer;
 
 //NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class CustomerDataAccess
@@ -17,7 +17,7 @@ public:
     bool insert_customer(const Customer& customer);
     bool update_customer(const Customer& customer);
     bool delete_customer(const std::string& customer_id);
-    Customer get_customer(const std::string& customer_id);
+    Customer& get_customer(const std::string& customer_id);
     std::vector<Customer> list_customers();
 
 private:
