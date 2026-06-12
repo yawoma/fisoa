@@ -32,7 +32,7 @@ public:
     Customer              get_customer(const std::string& customer_id);
     std::vector<Customer> list_customers();
 
-private:
+protected:
     void             init_database();
     // void close_database();
     SQLite::Database m_db;
