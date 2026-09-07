@@ -13,6 +13,8 @@ else(CMAKE_CXX_STANDARD LESS 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Set the cmake module dir
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -32,6 +34,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_executable(app app/main.cpp) #
 
+# Install libuuid needed for stduuid
+# include(cmake/InstallLibUUID.cmake)
 add_subdirectory(src)
 
 target_link_libraries(app 
@@ -41,8 +45,9 @@ target_link_libraries(app
 
 # ------------------tests-------------------------- #
 # Set the test build OFF by default. GoogleTest will be used
-option(BUILD_TESTS "Build unit tests" OFF)
+option(BUILD_TESTS "Build unit tests" ON)
 if(BUILD_TESTS)
+    message(STATUS "Build Tests")
 
     include(CTest)    
     include(GoogleTest)
