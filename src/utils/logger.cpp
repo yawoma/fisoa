@@ -6,6 +6,7 @@
 #include <spdlog/logger.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -77,7 +78,7 @@ void        Logger::trace(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -89,7 +90,7 @@ void Logger::debug(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -101,7 +102,7 @@ void Logger::info(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -113,7 +114,7 @@ void Logger::warn(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -125,7 +126,7 @@ void Logger::error(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -137,7 +138,7 @@ void Logger::critical(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        std::runtime_error(ex.what());
     }
 }
 
