@@ -8,6 +8,7 @@
 #define UUID_SYSTEM_GENERATOR
 #include "uuid.h"
 
+namespace fisoa{
 bool create_database_directory()
 {
     std::string           path = std::string(SOURCE_DIR) + "/data/fisoa.db3";
@@ -38,3 +39,4 @@ namespace uuid
 {
 std::string generate() { return uuids::to_string(uuids::uuid_system_generator{}()); }
 }    // namespace uuid
+}    // namespace fisoa
