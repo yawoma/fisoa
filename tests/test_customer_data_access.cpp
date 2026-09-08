@@ -15,10 +15,8 @@ class CustomerDataAccessTest : public ::testing::Test {
     protected:
         void SetUp() override {
             // Create a SQLite DB in memory
-            // SQLite::Database sqliteDb = database_builder(":memory:"); // already tested in SQLiteCpp
             db = std::make_unique<SQLite::Database>(":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
             // Create schema
-            // const char* schema = ;
             int val = db->exec(
                 "CREATE TABLE Customers ("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
