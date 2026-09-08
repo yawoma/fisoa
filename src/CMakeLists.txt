@@ -8,6 +8,21 @@ set(SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/utils/logger.cpp
 )
 
+#Create an interface library for stduuid
+add_library(stduuid INTERFACE)
+#for system uuid library
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(UUID REQUIRED uuid)  
+target_include_directories(stduuid 
+    INTERFACE 
+        ${CMAKE_SOURCE_DIR}/third-party/stduuid/include
+        ${UUID_INCLUDE_DIRS}
+) # uuid
+target_link_libraries(stduuid 
+    INTERFACE 
+        ${UUID_LIBRARIES}
+)
+
 #Create a library target for the source files
 add_library(fisoa_lib STATIC "")
 
