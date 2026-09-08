@@ -62,7 +62,7 @@ jobs:
         name: compile_commands
         path: build/compile_commands.json
 
-    # Execute the tests
+    # Execute the tests.
     - name: Test
       run: ctest --test-dir build --output-on-failure
   
