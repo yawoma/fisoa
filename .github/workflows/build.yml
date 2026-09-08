@@ -48,6 +48,10 @@ jobs:
           uuid-dev \
           ninja-build
 
+    # delete build dir to be sure to clean caches
+    - name: Clean build
+      run: rm -rf build/
+
     # Build with Ninja generator
     - name: Configure CMake with Ninja
       run: |
