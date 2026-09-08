@@ -12,8 +12,7 @@ namespace fisoa{
 bool create_database_directory()
 {
     std::string           path = std::string(SOURCE_DIR) + "/data/fisoa.db3";
-    std::filesystem::path db_path(path);
-    std::filesystem::path dir = db_path.parent_path();
+    std::filesystem::path dir = std::filesystem::path(path).parent_path();
 
     if (!std::filesystem::exists(dir))
     {
