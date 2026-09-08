@@ -38,7 +38,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install \
+        sudo apt-get -y install \
           build-essential \
           libx11-dev \
           libxcursor-dev \
@@ -61,9 +61,9 @@ jobs:
         name: compile_commands
         path: build/compile_commands.json
 
-    # Execute the tests. TODO: To be reviewed
-    # - name: Test
-    #   run: ctest ...
+    # Execute the tests.
+    - name: Test
+      run: ctest --test-dir build --output-on-failure
   
   check_tidy:
     name: Clang-tidy
