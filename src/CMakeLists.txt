@@ -14,13 +14,17 @@ set(SRC_FILES
 
 #Create an interface library for stduuid
 add_library(stduuid INTERFACE)
+#for system uuid library
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(UUID REQUIRED uuid)  
 target_include_directories(stduuid 
     INTERFACE 
         ${CMAKE_SOURCE_DIR}/third-party/stduuid/include
-)
+        ${UUID_INCLUDE_DIRS}
+) # uuid
 target_link_libraries(stduuid 
     INTERFACE 
-        uuid
+        ${UUID_LIBRARIES}
 )
 
 
