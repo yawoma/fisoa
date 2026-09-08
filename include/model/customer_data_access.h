@@ -26,9 +26,9 @@ struct Customer
 class CustomerDataAccess
 {
 public:
-    explicit CustomerDataAccess();
+    CustomerDataAccess();
     explicit CustomerDataAccess(SQLite::Database& database);
-    ~CustomerDataAccess();
+    ~CustomerDataAccess() = default;
 
     int                  insert_customer(const Customer& customer);
     int                  update_customer(const Customer& customer);

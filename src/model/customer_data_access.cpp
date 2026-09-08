@@ -8,17 +8,14 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace fisoa
 {
 CustomerDataAccess::CustomerDataAccess(): m_db(SQLite::Database("")) { init_database(); }
 
 CustomerDataAccess::CustomerDataAccess(SQLite::Database &database) : m_db(std::move(database)) {}
-
-CustomerDataAccess::~CustomerDataAccess()
-{
-    // close_database();
-}
 
 int CustomerDataAccess::insert_customer(const Customer& customer)
 {
@@ -55,7 +52,7 @@ int CustomerDataAccess::insert_customer(const Customer& customer)
 
 int CustomerDataAccess::update_customer(const Customer& customer)
 {
-    std::string request =
+    const char* request =
         "UPDATE Customers SET firstName = ?, name = ?, email = ?, phone = ?, address = ?, gender = ?, passportId = ?"
         " WHERE uuid = ?";
     SQLite::Statement query(m_db, request);
@@ -107,7 +104,7 @@ int CustomerDataAccess::delete_customer(const std::string& customer_uuid)
 
 Customer CustomerDataAccess::get_customer(const std::string& customer_uuid)
 {
-    std::string request = "SELECT id, uuid, firstName, name, email, phone, address, "
+    const char* request = "SELECT id, uuid, firstName, name, email, phone, address, "
                           "gender, passportId FROM Customers WHERE uuid = ?";
     SQLite::Statement query(m_db, request);
     query.bind(1, customer_uuid);
@@ -135,7 +132,7 @@ Customer CustomerDataAccess::get_customer(const std::string& customer_uuid)
 
 std::vector<Customer> CustomerDataAccess::list_customers()
 {
-    std::string request = "SELECT id, uuid, firstName, name, email, phone, address, "
+    const char* request = "SELECT id, uuid, firstName, name, email, phone, address, "
                           "gender, passportId FROM Customers";
     SQLite::Statement     query(m_db, request);
     std::vector<Customer> customers;
@@ -160,9 +157,9 @@ void CustomerDataAccess::init_database()
 {
     if (create_database_directory())
     {
-        std::string db_path = get_database_path();
-        m_db = SQLite::Database(db_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-        get_logger().info("Database initialized successfully at: " + db_path);
+        const std::string DB_PATH = get_database_path();
+        m_db = SQLite::Database(DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+        get_logger().info("Database initialized successfully at: " + DB_PATH);
         // Check if the customers table exists, if not create it
         if (!m_db.tableExists("Customers"))
         {
