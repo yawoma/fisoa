@@ -1,12 +1,11 @@
 #include "utils/database.h"
 
 #include "utils/logger.h"
+#include "uuid.h"
 
 #include <algorithm>
 #include <filesystem>
 #include <string>
-
-#include "uuid.h"
 
 namespace fisoa{
 bool create_database_directory()
