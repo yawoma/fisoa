@@ -6,6 +6,7 @@
 #include <spdlog/logger.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -77,7 +78,7 @@ void        Logger::trace(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -89,7 +90,7 @@ void Logger::debug(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -101,7 +102,7 @@ void Logger::info(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -113,7 +114,7 @@ void Logger::warn(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -125,7 +126,7 @@ void Logger::error(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        throw std::runtime_error(ex.what());
     }
 }
 
@@ -137,7 +138,7 @@ void Logger::critical(const std::string& msg)
     }
     catch (const spdlog::spdlog_ex& ex)
     {
-        std::cerr << "Logging failed: " << ex.what() << "\n";
+        std::runtime_error(ex.what());
     }
 }
 
@@ -152,8 +153,9 @@ void Logger::init()
         auto max_file_size = FILE_MAX_SIZE;
         auto max_files     = MAX_FILES;
 
+        // redefine the log file path to be relative to the source directory
         auto file_log      = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            m_logFilePath, max_file_size, max_files);
+            std::string(SOURCE_DIR) + "/" + m_logFilePath, max_file_size, max_files);
         file_log->set_pattern(FILE_PATTERN_DESIGN.data());
         file_log->set_level(spdlog::level::trace);
 

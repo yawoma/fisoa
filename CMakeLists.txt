@@ -13,17 +13,19 @@ else(CMAKE_CXX_STANDARD LESS 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
-# avoid to run nlohmann tests
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Set the cmake module dir
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# get the current list dir
+add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Add SQLiteCpp wrap as submodule
-add_subdirectory(third-party/SQLiteCpp) # ${CMAKE_CURRENT_LIST_DIR}/
+add_subdirectory(third-party/SQLiteCpp) #
 
 # Add spdlog library
-add_subdirectory(third-party/spdlog) #${CMAKE_CURRENT_LIST_DIR}/
-
-# Add nlohmann for json
-add_subdirectory(third-party/nlohmann_json)
+add_subdirectory(third-party/spdlog) #
 
 set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 
@@ -32,17 +34,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_executable(app app/main.cpp) #
 
+# Install libuuid needed for stduuid
+# include(cmake/InstallLibUUID.cmake)
 add_subdirectory(src)
 
 target_link_libraries(app 
     PUBLIC
-        fisoa_lib
+        fisoa
 )
 
 # ------------------tests-------------------------- #
 # Set the test build OFF by default. GoogleTest will be used
-option(BUILD_TESTS "Build unit tests" OFF)
+option(BUILD_TESTS "Build unit tests" ON)
 if(BUILD_TESTS)
+    message(STATUS "Build Tests")
 
     include(CTest)    
     include(GoogleTest)
