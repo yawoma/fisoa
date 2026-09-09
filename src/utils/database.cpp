@@ -2,10 +2,10 @@
 
 #include "utils/logger.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <string>
 
-#define UUID_SYSTEM_GENERATOR
 #include "uuid.h"
 
 namespace fisoa{
@@ -36,6 +36,16 @@ std::string get_database_path() { return std::string(SOURCE_DIR) + "/data/fisoa.
 
 namespace uuid
 {
-std::string generate() { return uuids::to_string(uuids::uuid_system_generator{}()); }
+std::string generate() 
+{ 
+    std::random_device rdevice;
+    auto seed_data = std::array<int, std::mt19937::state_size> {};
+    std::ranges::generate(seed_data.begin(), seed_data.end(), std::ref(rdevice));
+    std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+    std::mt19937 generator(seq);
+    uuids::uuid_random_generator gen{generator};
+
+    return uuids::to_string(gen()); 
+}
 }    // namespace uuid
 }    // namespace fisoa
