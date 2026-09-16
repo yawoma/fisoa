@@ -101,7 +101,7 @@ TEST_F(CustomerDataAccessTest, same_uuid_failed)
         .phone="06 22 50 32 58", 
         .address="1 rue boby 35000 Jama", 
         .gender="", .passportId="BB0001000"};
-    EXPECT_EQ(cdao->insert_customer(customer), 0);
+    EXPECT_EQ(cdao->insert_customer(customer2), 0);
 }
 
 TEST_F(CustomerDataAccessTest, same_passport_id_failed)
