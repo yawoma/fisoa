@@ -24,12 +24,14 @@ Table 3 : Airplane
     • Airplane model
     • Number of seats lines
     • Number of seats colomns
+    • Number of lanes
     • Acquisition date
 
 Table 4 : Flight
     • Id 
     • Flight UUID
     • Company ID 
+    • Company ICAO
     • Departure town
     • Arrival town
     • Depature date 
