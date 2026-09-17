@@ -116,7 +116,7 @@ void CompanyDataAccess::init_database()
         const std::string DB_PATH = get_database_path();
         m_db = SQLite::Database(DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
         get_logger().info("Database initialized successfully at: " + DB_PATH);
-        // Check if the customers table exists, if not create it
+        // Check if the companies table exists, if not create it
         if (!m_db.tableExists("Companies"))
         {
             m_db.exec(
