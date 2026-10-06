@@ -27,9 +27,12 @@ int CompanyDataAccess::insert_company(const Company& company)
     int result = 0;
     try {
         result = query.exec();
-        get_logger().info("Company " + company.codeIcao + " has been inserted successfully");
+        if (result > 0)
+        {
+            get_logger().info("Company " + company.codeIcao + " has been inserted successfully");
+        }
     } catch (const SQLite::Exception& e) {
-        get_logger().error("Failed to insert company " + company.codeIcao + " " + std::string(e.what()));
+        get_logger().error("Failed to insert company " + company.codeIcao + " :" + std::string(e.what()));
     }
     return result;
 }
@@ -65,7 +68,10 @@ int CompanyDataAccess::delete_company(const std::string& code_icao)
     int result = 0;
     try {
         result = query.exec();
-        get_logger().info("Company " + code_icao + " has been deleted successfully");
+        if (result > 0)
+        {
+            get_logger().info("Company " + code_icao + " has been deleted successfully");
+        }
     } catch (const SQLite::Exception& e) {
         get_logger().error("Failed to delete a company: " + std::string(e.what()));
     }
