@@ -27,9 +27,12 @@ int CompanyDataAccess::insert_company(const Company& company)
     int result = 0;
     try {
         result = query.exec();
-        get_logger().info("Company " + company.codeIcao + " has been inserted successfully");
+        if (result > 0)
+        {
+            get_logger().info("Company " + company.codeIcao + " has been inserted successfully");
+        }
     } catch (const SQLite::Exception& e) {
-        get_logger().error("Failed to insert company " + company.codeIcao + " " + std::string(e.what()));
+        get_logger().error("Failed to insert company " + company.codeIcao + " :" + std::string(e.what()));
     }
     return result;
 }
@@ -65,7 +68,10 @@ int CompanyDataAccess::delete_company(const std::string& code_icao)
     int result = 0;
     try {
         result = query.exec();
-        get_logger().info("Company " + code_icao + " has been deleted successfully");
+        if (result > 0)
+        {
+            get_logger().info("Company " + code_icao + " has been deleted successfully");
+        }
     } catch (const SQLite::Exception& e) {
         get_logger().error("Failed to delete a company: " + std::string(e.what()));
     }
@@ -116,7 +122,7 @@ void CompanyDataAccess::init_database()
         const std::string DB_PATH = get_database_path();
         m_db = SQLite::Database(DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
         get_logger().info("Database initialized successfully at: " + DB_PATH);
-        // Check if the customers table exists, if not create it
+        // Check if the companies table exists, if not create it
         if (!m_db.tableExists("Companies"))
         {
             m_db.exec(
