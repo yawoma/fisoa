@@ -38,6 +38,7 @@ Table 4 : Flight
     • Arrival date 
     • Ecomonic Place Fee
     • Busyness Place Fee
+    • Currency
 
 Table 5 : Booking
     • Id
