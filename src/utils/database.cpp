@@ -7,11 +7,12 @@
 #include <filesystem>
 #include <string>
 
-namespace fisoa{
+namespace fisoa
+{
 bool create_database_directory()
 {
     std::string           path = std::string(SOURCE_DIR) + "/data/fisoa.db3";
-    std::filesystem::path dir = std::filesystem::path(path).parent_path();
+    std::filesystem::path dir  = std::filesystem::path(path).parent_path();
 
     if (!std::filesystem::exists(dir))
     {
@@ -33,18 +34,32 @@ bool create_database_directory()
 
 std::string get_database_path() { return std::string(SOURCE_DIR) + "/data/fisoa.db3"; }
 
+void        open_database(SQLite::Database& database)
+{
+    if (create_database_directory())
+    {
+        const std::string DB_PATH = get_database_path();
+        database =
+            SQLite::Database(DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    }
+    else
+    {
+        throw std::runtime_error("Failed to create or find database directory");
+    }
+}
+
 namespace uuid
 {
-std::string generate() 
-{ 
+std::string generate()
+{
     std::random_device rdevice;
-    auto seed_data = std::array<int, std::mt19937::state_size> {};
+    auto               seed_data = std::array<int, std::mt19937::state_size>{};
     std::ranges::generate(seed_data.begin(), seed_data.end(), std::ref(rdevice));
-    std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
-    std::mt19937 generator(seq);
+    std::seed_seq                seq(std::begin(seed_data), std::end(seed_data));
+    std::mt19937                 generator(seq);
     uuids::uuid_random_generator gen{generator};
 
-    return uuids::to_string(gen()); 
+    return uuids::to_string(gen());
 }
 }    // namespace uuid
 }    // namespace fisoa
