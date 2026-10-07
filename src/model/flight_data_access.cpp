@@ -1,7 +1,7 @@
 #include "model/flight_data_access.h"
+
 #include "SQLiteCpp/Database.h"
 #include "utils/logger.h"
-#include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,6 +14,7 @@ FlightDataAccess::FlightDataAccess(SQLite::Database& database) : m_db(std::move(
 
 int FlightDataAccess::insert_flight(const Flight& flight)
 {
+    
     return 0;
 }
 
@@ -45,23 +46,31 @@ void FlightDataAccess::init_database(SQLite::Database& database)
 int FlightDataAccess::create_table()
 {
     int result = -1;
-    if (m_db.getHandle() != NULL)
+    if (m_db.getHandle() != nullptr)
     {
+        if (!m_db.tableExists("Companies"))
+        {
+            return result;
+        }
+
         if (!m_db.tableExists("Flights"))
         {
             result = m_db.exec(
                 "CREATE TABLE Flights ("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                "companyId INTEGER FOREIGN KEY, "
+                "companyId INTEGER, "
                 "uuid TEXT NOT NULL UNIQUE, "
-                "codeIcao TEXT NOT NULL, "
+                "codeIcao TEXT NOT NULL UNIQUE, "
                 "departureTown TEXT NOT NULL, "
                 "arrivalTown TEXT NOT NULL, "
                 "departureDate DATE NOT NULL, "
                 "arrivalDate DATE NOT NULL, "
-                "economicPlaceFee FLOAT(24) NOT NULL, "
+                "economicPlaceFee FLOAT(24) NOT NULL, " /*4 bytes float*/
                 "busynessPlaceFee FLOAT(24) NOT NULL, "
-                "currency TEXT"
+                "currency TEXT, "
+                "CONSTRAINT fk_company FOREIGN KEY (companyId) REFERENCES Companies(id)"
+                "   ON DELETE RESTRICT"
+                "   ON UPDATE CASCADE"
                 ")"
             );
             get_logger().info("Flights table created");
