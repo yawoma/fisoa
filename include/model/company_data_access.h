@@ -3,38 +3,43 @@
 
 #include "SQLiteCpp/Database.h"
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
-namespace fisoa {
+namespace fisoa
+{
 
-struct Company{
- uint32_t id = 0;
- std::string name;
- std::string codeIcao;
- std::string codeIata;
- std::string callSign;
+struct Company
+{
+    uint32_t    id = 0;
+    std::string name;
+    std::string codeIcao;
+    std::string codeIata;
+    std::string callSign;
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class CompanyDataAccess
 {
-    public:
-        CompanyDataAccess();
-        explicit CompanyDataAccess(SQLite::Database& database);
-        ~CompanyDataAccess() = default;
+public:
+    CompanyDataAccess();
+    explicit CompanyDataAccess(SQLite::Database& database);
+    ~CompanyDataAccess() = default;
 
-        int insert_company(const Company& company);
-        int update_company(const Company& company);
-        int delete_company(const std::string& code_icao);
-        Company get_company(const std::string& code_icao);
-        std::vector<Company> list_companies();
-    
-    private:
-        void init_database();
-        SQLite::Database m_db;
+    int                    insert_company(const Company& company);
+    int                    update_company(const Company& company);
+    int                    delete_company(const std::string& code_icao);
+    std::optional<Company> get_company(const std::string& code_icao);
+    std::vector<Company>   list_companies();
+
+    void                   init_database(SQLite::Database& database);
+    int                    create_table();
+
+private:
+    SQLite::Database m_db;
 };
 
-} // namaspace fisoa
+}    // namespace fisoa
 
 #endif
