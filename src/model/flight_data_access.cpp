@@ -1,6 +1,7 @@
 #include "model/flight_data_access.h"
 
 #include "SQLiteCpp/Database.h"
+#include "SQLiteCpp/Statement.h"
 #include "utils/logger.h"
 #include <optional>
 #include <string>
@@ -14,7 +15,7 @@ FlightDataAccess::FlightDataAccess(SQLite::Database& database) : m_db(std::move(
 
 int FlightDataAccess::insert_flight(const Flight& flight)
 {
-    
+    SQLite::Statement query(m_db, "");
     return 0;
 }
 
