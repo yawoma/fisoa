@@ -11,6 +11,7 @@ struct Flight{
     uint32_t companyId = 0;
     std::string uuid;
     std::string codeIcao; //< company code ICAO
+    std::string number; //< flight number
     std::string departureTown;
     std::string arrivalTown;
     std::string departureDate;
@@ -27,7 +28,7 @@ class FlightDataAccess {
         explicit FlightDataAccess(SQLite::Database& database);
         ~FlightDataAccess() = default;
 
-        int insert_flight(const Flight& flight);
+        int insert_flight(const Flight& flight, const std::string& company_name);
         int update_flight(const Flight& flight);
         int delete_flight(const std::string& flight_uuid);
         std::optional<Flight> get_flight(const std::string& flight_uuid);
