@@ -32,6 +32,7 @@ Table 4 : Flight
     • Flight UUID
     • Company ID 
     • Company ICAO
+    • Flight number
     • Departure town
     • Arrival town
     • Depature date 
