@@ -4,6 +4,7 @@
 #include "SQLiteCpp/Database.h"
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,17 +31,19 @@ public:
     explicit CustomerDataAccess(SQLite::Database& database);
     ~CustomerDataAccess() = default;
 
-    int                  insert_customer(const Customer& customer);
-    int                  update_customer(const Customer& customer);
-    int                  delete_customer(const std::string& customer_uuid);
-    Customer              get_customer(const std::string& customer_uuid);
-    std::vector<Customer> list_customers();
+    int                     insert_customer(const Customer& customer);
+    int                     update_customer(const Customer& customer);
+    int                     delete_customer(const std::string& customer_uuid);
+    std::optional<Customer> get_customer(const std::string& customer_uuid);
+    std::vector<Customer>   list_customers();
+
+    void                    init_database(SQLite::Database& database);
+    int                     create_table();
 
 private:
-    void             init_database();
     // void close_database();
     SQLite::Database m_db;
 };
-} // namespace fisoa
+}    // namespace fisoa
 
 #endif    // CUSTOMER_DATA_ACCESS_H
