@@ -50,7 +50,7 @@ int FlightDataAccess::insert_flight(const Flight& flight, const std::string& com
         result = query.exec();
         if (result > 0)
         {
-            get_logger().info("Flight number " + flight.number + " has been inserted successfully");
+            get_logger().info("Flight " + flight.number + " has been inserted successfully");
         }
     } catch (const SQLite::Exception& e) {
         get_logger().error("Failed to insert flight number " + flight.number + " : " + e.what());
@@ -60,22 +60,109 @@ int FlightDataAccess::insert_flight(const Flight& flight, const std::string& com
 
 int FlightDataAccess::update_flight(const Flight& flight)
 {
-    return 0;
+    SQLite::Statement query(m_db, 
+        "UPDATE Flights SET flightNumber = ?, "
+        "departureTown = ?, arrivalTown = ?, "
+        "departureDate = ?, arrivalDate = ?, "
+        "economicPlaceFee = ?, busynessPlaceFee = ?, "
+        "currency = ? WHERE uuid = ?");
+    const int NUMBER_VAL = 1;
+    query.bind(NUMBER_VAL, flight.number);
+    const int DEPARTURE_TOWN_VAL = 2;
+    query.bind(DEPARTURE_TOWN_VAL, flight.departureTown);
+    const int ARRIVAL_TOWN_VAL = 3;
+    query.bind(ARRIVAL_TOWN_VAL, flight.arrivalTown);
+    const int DEPARTURE_DATE_VAL = 4;
+    query.bind(DEPARTURE_DATE_VAL, flight.departureDate);
+    const int ARRIVAL_DATE_VAL = 5;
+    query.bind(ARRIVAL_DATE_VAL, flight.arrivalDate);
+    const int ECO_VAL = 6;
+    query.bind(ECO_VAL, flight.economicFee);
+    const int BUSY_VAL = 7;
+    query.bind(BUSY_VAL, flight.busynessFee);
+    const int UUID_VAL = 8;
+    query.bind(UUID_VAL, flight.uuid);
+    int result = 0;
+    try {
+        result = query.exec();
+        if (result > 0)
+        {
+            get_logger().info("Flight " + flight.number + " has been updated successfully");
+        }
+    } catch (const SQLite::Exception& e) {
+        get_logger().error("Failed to updated flight " + flight.number + " : " + e.what());
+    }
+    return result;
 }
 
 int FlightDataAccess::delete_flight(const std::string& flight_uuid)
 {
-    return 0;
+    SQLite::Statement query(m_db, "DELETE FROM Flights WHERE uuid = ?");
+    query.bind(1, flight_uuid);
+    int result = 0;
+    try {
+        result = query.exec();
+        if (result > 0)
+        {
+            get_logger().info("Flight id " + flight_uuid + " has been deleted");
+        }
+    } catch (const SQLite::Exception& e) {
+        get_logger().error("Failed to delete flight " + flight_uuid + " : " + e.what());
+    }
+    return result;
 }
 
 std::optional<Flight> FlightDataAccess::get_flight(const std::string& flight_uuid)
 {
+    SQLite::Statement query(m_db, "SELECT id, companyId, uuid, codeIcao, "
+        "fligthNumber, departureTown, arrivalTown, departureDate, arrivalDate, "
+        "economicPlaceFee, busynessPlaceFee, currency FROM Flights WHERE uuid = ?");
+    query.bind(1, flight_uuid);
+    if (query.executeStep()) {
+        return Flight{
+            .id = query.getColumn("id").getUInt(),
+            .companyId = query.getColumn("companyId").getUInt(),
+            .uuid = query.getColumn("uuid").getString(),
+            .codeIcao = query.getColumn("codeIcao").getString(),
+            .number = query.getColumn("flightNumber").getString(),
+            .departureTown = query.getColumn("departureTown").getString(),
+            .arrivalTown = query.getColumn("arrivalTown").getString(),
+            .departureDate = query.getColumn("departureDate").getString(),
+            .arrivalDate = query.getColumn("arrivalDate").getString(),
+            .economicFee = static_cast<float>(query.getColumn("economicPlaceFee").getDouble()),
+            .busynessFee = static_cast<float>(query.getColumn("busynessPlaceFee").getDouble()),
+            .currency = query.getColumn("currency").getString()
+        };
+    }
     return std::nullopt;
 }
 
 std::vector<Flight> FlightDataAccess::list_flights()
 {
-    return {};
+    SQLite::Statement query(m_db, "SELECT id, companyId, uuid, codeIcao, "
+        "fligthNumber, departureTown, arrivalTown, departureDate, arrivalDate, "
+        "economicPlaceFee, busynessPlaceFee, currency FROM Flights");
+    std::vector<Flight> flights;
+    while (query.executeStep()) {
+        flights.push_back(
+            Flight {
+                .id = query.getColumn("id").getUInt(),
+                .companyId = query.getColumn("companyId").getUInt(),
+                .uuid = query.getColumn("uuid").getString(),
+                .codeIcao = query.getColumn("codeIcao").getString(),
+                .number = query.getColumn("flightNumber").getString(),
+                .departureTown = query.getColumn("departureTown").getString(),
+                .arrivalTown = query.getColumn("arrivalTown").getString(),
+                .departureDate = query.getColumn("departureDate").getString(),
+                .arrivalDate = query.getColumn("arrivalDate").getString(),
+                .economicFee = static_cast<float>(query.getColumn("economicPlaceFee").getDouble()),
+                .busynessFee = static_cast<float>(query.getColumn("busynessPlaceFee").getDouble()),
+                .currency = query.getColumn("currency").getString()
+            }
+        );
+    
+    }
+    return flights;
 }
 
 void FlightDataAccess::init_database(SQLite::Database& database)
