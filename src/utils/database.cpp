@@ -5,6 +5,8 @@
 #include "uuid.h"
 
 #include <algorithm>
+#include <chrono>
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -59,6 +61,13 @@ std::optional<SQLite::Database> DatabaseManager::instance()
     }
 
     return std::nullopt;
+}
+
+uint64_t get_timestamp_millisecond()
+{
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count();
 }
 
 namespace uuid
