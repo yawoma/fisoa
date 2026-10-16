@@ -172,7 +172,10 @@ int CustomerDataAccess::create_table()
                 "address TEXT NOT NULL, "
                 "gender TEXT, "
                 "passportId TEXT NOT NULL UNIQUE)");
-            get_logger().info("Customers table created successfully.");
+            if (result >=0 )
+            {
+                get_logger().info("Customers table created successfully.");
+            }
         }
         else
         {
@@ -181,7 +184,7 @@ int CustomerDataAccess::create_table()
         }
         return result;
     }
-    get_logger().error("Database have not been connected");
+    get_logger().error("Database has not been connected");
     return result;
 }
 

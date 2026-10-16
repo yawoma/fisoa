@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include "SQLiteCpp/Database.h"
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -16,6 +17,9 @@ class DatabaseManager
 public:
     static std::optional<SQLite::Database> instance();
 };
+
+/**Getting millisecond timestamp since the Unix epoch*/
+int64_t get_timestamp_millisecond();
 
 namespace uuid
 {

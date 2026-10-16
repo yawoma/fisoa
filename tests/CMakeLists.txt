@@ -1,5 +1,5 @@
 # Collect test source files
-file(GLOB_RECURSE CXX_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB_RECURSE CXX_FILES "${CMAKE_CURRENT_LIST_DIR}/**/*.cpp")
 add_executable(app_utests ${CXX_FILES})
 
 # Include directories 
