@@ -1,10 +1,12 @@
 #include "utils/database.h"
 
+#include "SQLiteCpp/Database.h"
 #include "utils/logger.h"
 #include "uuid.h"
 
 #include <algorithm>
 #include <filesystem>
+#include <optional>
 #include <string>
 
 namespace fisoa
@@ -46,6 +48,17 @@ void        open_database(SQLite::Database& database)
     {
         throw std::runtime_error("Failed to create or find database directory");
     }
+}
+
+std::optional<SQLite::Database> DatabaseManager::instance()
+{
+    if (create_database_directory())
+    {
+        const std::string DB_PATH = get_database_path();
+        return SQLite::Database{DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+    }
+
+    return std::nullopt;
 }
 
 namespace uuid

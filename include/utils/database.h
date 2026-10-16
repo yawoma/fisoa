@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include "SQLiteCpp/Database.h"
+#include <optional>
 #include <string>
 
 namespace fisoa
@@ -9,6 +10,12 @@ namespace fisoa
 bool        create_database_directory();
 std::string get_database_path();
 void        open_database(SQLite::Database& database);
+
+class DatabaseManager
+{
+public:
+    static std::optional<SQLite::Database> instance();
+};
 
 namespace uuid
 {
