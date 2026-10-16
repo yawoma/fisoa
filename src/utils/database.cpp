@@ -38,20 +38,6 @@ bool create_database_directory()
 
 std::string get_database_path() { return std::string(SOURCE_DIR) + "/data/fisoa.db3"; }
 
-void        open_database(SQLite::Database& database)
-{
-    if (create_database_directory())
-    {
-        const std::string DB_PATH = get_database_path();
-        database =
-            SQLite::Database(DB_PATH, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    }
-    else
-    {
-        throw std::runtime_error("Failed to create or find database directory");
-    }
-}
-
 std::optional<SQLite::Database> DatabaseManager::instance()
 {
     if (create_database_directory())

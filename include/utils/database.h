@@ -10,7 +10,6 @@ namespace fisoa
 {
 bool        create_database_directory();
 std::string get_database_path();
-void        open_database(SQLite::Database& database);
 
 class DatabaseManager
 {
