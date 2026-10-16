@@ -209,7 +209,10 @@ int FlightDataAccess::create_table()
                 "   ON DELETE RESTRICT"
                 "   ON UPDATE CASCADE"
                 ")");
-            get_logger().info("Flights table created");
+            if (result >= 0)
+            {
+                get_logger().info("Flights table created");
+            }
         }
         else
         {
@@ -218,7 +221,7 @@ int FlightDataAccess::create_table()
         }
         return result;
     }
-    get_logger().error("Database have not been connected");
+    get_logger().error("Database has not been connected");
     return result;
 }
 }    // namespace fisoa

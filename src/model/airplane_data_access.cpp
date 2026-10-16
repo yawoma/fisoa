@@ -167,7 +167,10 @@ int AirplaneDataAccess::create_table()
                 "numberOfColumns INTEGER NOT NULL, "
                 "numberOfLanes INTEGER NOT NULL, "
                 "acquisitionDate TEXT)");
-            get_logger().info("Airplanes table created");
+            if (result >= 0)
+            {
+                get_logger().info("Airplanes table created");
+            }
         }
         else
         {
@@ -176,7 +179,7 @@ int AirplaneDataAccess::create_table()
         }
         return result;
     }
-    get_logger().error("Database have not been connected");
+    get_logger().error("Database has not been connected");
     return result;
 }
 }    // namespace fisoa
