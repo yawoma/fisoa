@@ -45,6 +45,7 @@ Table 5 : Booking
     • Id
     • Customer UUID
     • Flight UUID
-    • Booking ID (Timestamp?: reservation date)
+    • Booking ID (Timestamp?: reservation time)
+    • Booking Date
     • Booking cancelation (bool : true/false)
     • Seat number
