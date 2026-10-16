@@ -31,18 +31,20 @@ public:
     explicit CustomerDataAccess(SQLite::Database& database);
     ~CustomerDataAccess() = default;
 
+    CustomerDataAccess(const CustomerDataAccess&) = delete;
+    CustomerDataAccess& operator=(const CustomerDataAccess&) = delete;
+
     int                     insert_customer(const Customer& customer);
     int                     update_customer(const Customer& customer);
     int                     delete_customer(const std::string& customer_uuid);
     std::optional<Customer> get_customer(const std::string& customer_uuid);
     std::vector<Customer>   list_customers();
 
-    void                    init_database(SQLite::Database& database);
     int                     create_table();
 
 private:
     // void close_database();
-    SQLite::Database m_db;
+    SQLite::Database& m_db;
 };
 }    // namespace fisoa
 
