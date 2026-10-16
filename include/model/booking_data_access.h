@@ -12,7 +12,8 @@ struct Booking{
     uint32_t id = 0;
     std::string customerUUID;
     std::string flightUUID;
-    uint64_t reservationId; ///< reservation date as timestamp
+    int64_t reservationId; ///< reservation date as timestamp
+    std::string date;
     bool isCanceled;
     uint32_t seatNumber = 0;
 };
@@ -27,12 +28,12 @@ class BookingDataAccess{
         /*move assignement implicitly deleted due to reference database m_db*/
         BookingDataAccess& operator=(const BookingDataAccess&) = delete;
 
-        int insert_booking(const Booking& booking);
+        int insert_booking(const Booking& booking, uint32_t customer_id, uint32_t flight_id);
         int update_booking(const Booking& booking);
-        int delete_booking(uint64_t reservation_id);
-        bool canceled_booking(uint64_t reservation_id);
-        std::optional<Booking> get_booking(uint64_t reservation_id);
-        std::vector<Booking> list_reservations();
+        int delete_booking(int64_t reservation_id);
+        int cancel_booking(int64_t reservation_id);
+        std::optional<Booking> get_booking(int64_t reservation_id);
+        std::vector<Booking> list_bookings();
 
         int create_table();
     private:
