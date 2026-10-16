@@ -25,9 +25,11 @@ struct Airplane
 class AirplaneDataAccess
 {
 public:
-    AirplaneDataAccess();
     explicit AirplaneDataAccess(SQLite::Database& database);
     ~AirplaneDataAccess() = default;
+
+    AirplaneDataAccess(const AirplaneDataAccess&) = delete;
+    AirplaneDataAccess& operator=(const AirplaneDataAccess&) = delete;
 
     int                     insert_airplane(const Airplane& airplane);
     int                     update_airplane(const Airplane& airplane);
@@ -35,11 +37,10 @@ public:
     std::optional<Airplane> get_airplane(const std::string& airplane_uuid);
     std::vector<Airplane>   list_airplanes();
 
-    void                    init_database(SQLite::Database& database);
     int                     create_table();
 
 private:
-    SQLite::Database m_db;
+    SQLite::Database& m_db;
 };
 }    // namespace fisoa
 #endif    // AIRPLANE_DATA_ACCESS_H

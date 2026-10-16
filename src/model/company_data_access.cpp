@@ -142,8 +142,12 @@ int CompanyDataAccess::create_table()
         if (!m_db.tableExists("Companies"))
         {
             result = m_db.exec(
-                "CREATE TABLE Companies (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT "
-                "NOT NULL, codeIcao TEXT NOT NULL UNIQUE, codeIata TEXT, callSign TEXT)");
+                "CREATE TABLE Companies ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "name TEXT NOT NULL, "
+                "codeIcao TEXT NOT NULL UNIQUE, "
+                "codeIata TEXT, "
+                "callSign TEXT)");
             get_logger().info("Companies table create successfully.");
         }
         else

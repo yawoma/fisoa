@@ -9,15 +9,12 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace fisoa
 {
-CustomerDataAccess::CustomerDataAccess(): m_db(SQLite::Database("")) {}
-
 CustomerDataAccess::CustomerDataAccess(SQLite::Database& database)
-    : m_db(std::move(database))
+    : m_db(database)
 {
 }
 
@@ -156,11 +153,6 @@ std::vector<Customer> CustomerDataAccess::list_customers()
     return customers;
 }
 
-void CustomerDataAccess::init_database(SQLite::Database& database)
-{
-    m_db = std::move(database);
-}
-
 int CustomerDataAccess::create_table()
 {
     int result = -1;
@@ -170,10 +162,15 @@ int CustomerDataAccess::create_table()
         if (!m_db.tableExists("Customers"))
         {
             result = m_db.exec(
-                "CREATE TABLE Customers (id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT "
-                "NOT NULL UNIQUE, firstName "
-                "TEXT NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL, phone TEXT NOT "
-                "NULL, address TEXT NOT NULL, gender TEXT, "
+                "CREATE TABLE Customers ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "uuid TEXT NOT NULL UNIQUE, "
+                "firstName TEXT NOT NULL, "
+                "name TEXT NOT NULL, "
+                "email TEXT NOT NULL, "
+                "phone TEXT NOT NULL, "
+                "address TEXT NOT NULL, "
+                "gender TEXT, "
                 "passportId TEXT NOT NULL UNIQUE)");
             get_logger().info("Customers table created successfully.");
         }
@@ -182,6 +179,7 @@ int CustomerDataAccess::create_table()
             get_logger().info("Customers table found.");
             result = 0;
         }
+        return result;
     }
     get_logger().error("Database have not been connected");
     return result;

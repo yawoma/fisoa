@@ -8,14 +8,12 @@
 
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace fisoa
 {
-AirplaneDataAccess::AirplaneDataAccess(): m_db("") {}
 AirplaneDataAccess::AirplaneDataAccess(SQLite::Database& database)
-    : m_db(std::move(database))
+    : m_db(database)
 {
 }
 
@@ -152,11 +150,6 @@ std::vector<Airplane> AirplaneDataAccess::list_airplanes()
     return airplanes;
 }
 
-void AirplaneDataAccess::init_database(SQLite::Database& database)
-{
-    m_db = std::move(database);
-}
-
 int AirplaneDataAccess::create_table()
 {
     int result = -1;
@@ -166,11 +159,14 @@ int AirplaneDataAccess::create_table()
         if (!m_db.tableExists("Airplanes"))
         {
             result = m_db.exec(
-                "CREATE TABLE Airplanes (id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT "
-                "NOT NULL UNIQUE, "
-                "model TEXT NOT NULL, numberOfRows INTEGER NOT NULL, numberOfColumns "
-                "INTEGER NOT NULL, numberOfLanes INTEGER NOT NULL, "
-                "acquisitionDate DATE)");
+                "CREATE TABLE Airplanes ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "uuid TEXT NOT NULL UNIQUE, "
+                "model TEXT NOT NULL, "
+                "numberOfRows INTEGER NOT NULL, "
+                "numberOfColumns INTEGER NOT NULL, "
+                "numberOfLanes INTEGER NOT NULL, "
+                "acquisitionDate TEXT)");
             get_logger().info("Airplanes table created");
         }
         else
