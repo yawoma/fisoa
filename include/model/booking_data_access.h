@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+constexpr int64_t ONE_YEAR = 1823644800; ///< one year in timestamp
+
 namespace fisoa {
 struct Booking{
     uint32_t id = 0;
