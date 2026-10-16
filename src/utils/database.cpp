@@ -66,8 +66,8 @@ std::optional<SQLite::Database> DatabaseManager::instance()
 int64_t get_timestamp_millisecond()
 {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()
-    ).count();
+               std::chrono::system_clock::now().time_since_epoch())
+        .count();
 }
 
 namespace uuid
