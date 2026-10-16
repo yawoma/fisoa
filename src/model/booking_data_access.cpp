@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-constexpr int64_t ONE_YEAR = 1823644800; ///< one year in timestamp
-
 namespace fisoa {
 BookingDataAccess::BookingDataAccess(SQLite::Database& database) : m_db(database){}
 
@@ -73,7 +71,7 @@ int BookingDataAccess::delete_booking(int64_t reservation_id)
     // reservation must be able to be deleted only after one year
     const int64_t diff_time = get_timestamp_millisecond() - ONE_YEAR;
     SQLite::Statement query(m_db, "DELETE FROM Bookings WHERE reservationId = ? "
-        "AND reservationId < ?");
+        "AND reservationId <= ?");
     query.bind(1, reservation_id);
     query.bind(2, diff_time);
     int result = 0;
@@ -113,7 +111,7 @@ std::optional<Booking> BookingDataAccess::get_booking(int64_t reservation_id)
 {
     SQLite::Statement query(m_db, 
         "SELECT id, customerUuid, flightUuid, reservationId, reservationDate, "
-        "reservationCanceled, seatNumber WHERE reservationId = ?");
+        "reservationCanceled, seatNumber FROM Bookings WHERE reservationId = ?");
     query.bind(1, reservation_id);
     if (query.executeStep())
     {
@@ -134,7 +132,7 @@ std::vector<Booking> BookingDataAccess::list_bookings()
 {
     SQLite::Statement query(m_db, 
         "SELECT id, customerUuid, flightUuid, reservationId, reservationDate, "
-        "reservationCanceled, seatNumber");
+        "reservationCanceled, seatNumber FROM Bookings");
     std::vector<Booking> bookings;
     while (query.executeStep()) {
         bookings.push_back(
@@ -166,16 +164,16 @@ int BookingDataAccess::create_table()
         if (!m_db.tableExists("Bookings"))
         {
             result = m_db.exec("CREATE TABLE Bookings ("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT "
-                "customerUuid TEXT NOT NULL "
-                "flightUuid TEXT NOT NULL "
-                "reservationId INTEGER UNIQUE "
-                "reservationDate TEXT NOT NULL "
-                "reservationCanceled BOOLEAN "
-                "seatNumber INTEGER "
-                "CONSTRAINT fk_customer FOREIGN KEY (customerUuid) REFERENCES Customers(uuid)"
-                "   ON DELETE RESTRICT "
-                "CONSTRAINT fk_flight FOREIGN KEY (flightUuid) REFERENCES Flights(uuid)"
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "customerUuid TEXT NOT NULL, "
+                "flightUuid TEXT NOT NULL, "
+                "reservationId INTEGER UNIQUE, "
+                "reservationDate TEXT NOT NULL, "
+                "reservationCanceled BOOLEAN, "
+                "seatNumber INTEGER, "
+                "FOREIGN KEY (customerUuid) REFERENCES Customers(uuid)"
+                "   ON DELETE RESTRICT, "
+                "FOREIGN KEY (flightUuid) REFERENCES Flights(uuid)"
                 "   ON DELETE RESTRICT"
                 ")");
             if (result >= 0)
