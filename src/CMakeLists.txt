@@ -5,6 +5,7 @@ set(INCLUDE_FILES
     ${CMAKE_SOURCE_DIR}/include/model/company_data_access.h
     ${CMAKE_SOURCE_DIR}/include/utils/database.h
     ${CMAKE_SOURCE_DIR}/include/model/airplane_data_access.h
+    ${CMAKE_SOURCE_DIR}/include/model/flight_data_access.h
 )
 
 #to get the source files and add them to the lib target
@@ -14,6 +15,7 @@ set(SRC_FILES
     ${CMAKE_CURRENT_LIST_DIR}/model/company_data_access.cpp
     ${CMAKE_CURRENT_LIST_DIR}/model/airplane_data_access.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/database.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/model/flight_data_access.cpp
 )
 
 #Create an interface library for stduuid

@@ -32,12 +32,14 @@ Table 4 : Flight
     • Flight UUID
     • Company ID 
     • Company ICAO
+    • Flight number
     • Departure town
     • Arrival town
     • Depature date 
     • Arrival date 
     • Ecomonic Place Fee
     • Busyness Place Fee
+    • Currency
 
 Table 5 : Booking
     • Id
