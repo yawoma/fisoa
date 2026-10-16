@@ -11,54 +11,56 @@
 #include <memory>
 #include <optional>
 
-namespace fisoa {
-class BookingDataAccessTest : public ::testing::Test {
-    protected:
-        void SetUp() override
-        {
-            // Create SQLite DataBase in memory
-            db = std::make_unique<SQLite::Database>(
-                ":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-            cudao = std::make_unique<CustomerDataAccess>(*db);
-            ASSERT_GE(cudao->create_table(), 0);
-            codao = std::make_unique<CompanyDataAccess>(*db);
-            ASSERT_GE(codao->create_table(), 0);
-            fdao = std::make_unique<FlightDataAccess>(*db);
-            ASSERT_GE(fdao->create_table(), 0);
-            bdao = std::make_unique<BookingDataAccess>(*db);
-            ASSERT_GE(bdao->create_table(), 0);
-        }
+namespace fisoa
+{
+class BookingDataAccessTest : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        // Create SQLite DataBase in memory
+        db = std::make_unique<SQLite::Database>(
+            ":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+        cudao = std::make_unique<CustomerDataAccess>(*db);
+        ASSERT_GE(cudao->create_table(), 0);
+        codao = std::make_unique<CompanyDataAccess>(*db);
+        ASSERT_GE(codao->create_table(), 0);
+        fdao = std::make_unique<FlightDataAccess>(*db);
+        ASSERT_GE(fdao->create_table(), 0);
+        bdao = std::make_unique<BookingDataAccess>(*db);
+        ASSERT_GE(bdao->create_table(), 0);
+    }
 
-        void TearDown() override
-        {
-            bdao.reset();
-            fdao.reset();
-            codao.reset();
-            cudao.reset();
-            db.reset();
-        }
+    void TearDown() override
+    {
+        bdao.reset();
+        fdao.reset();
+        codao.reset();
+        cudao.reset();
+        db.reset();
+    }
 
-        // NOLINTBEGIN (misc-non-private-member-variables-in-classes)
-        std::unique_ptr<SQLite::Database> db;
-        std::unique_ptr<CustomerDataAccess> cudao;
-        std::unique_ptr<CompanyDataAccess> codao;
-        std::unique_ptr<FlightDataAccess> fdao;
-        std::unique_ptr<BookingDataAccess> bdao;
-        // NOLINTEND
+    // NOLINTBEGIN (misc-non-private-member-variables-in-classes)
+    std::unique_ptr<SQLite::Database>   db;
+    std::unique_ptr<CustomerDataAccess> cudao;
+    std::unique_ptr<CompanyDataAccess>  codao;
+    std::unique_ptr<FlightDataAccess>   fdao;
+    std::unique_ptr<BookingDataAccess>  bdao;
+    // NOLINTEND
 };
 
 TEST_F(BookingDataAccessTest, insert_and_get_booking)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -88,9 +90,9 @@ TEST_F(BookingDataAccessTest, insert_and_get_booking)
     // insert booking
     Booking booking{
         .reservationId = get_timestamp_millisecond(),
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2026-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     int booking_id = bdao->insert_booking(booking, customer_id, flight_id);
     EXPECT_GT(booking_id, 0);
@@ -108,22 +110,22 @@ TEST_F(BookingDataAccessTest, insert_and_get_booking)
 
 TEST_F(BookingDataAccessTest, get_non_existing_booking)
 {
-    int64_t does_not_exist_id = 125469873; // NOLINT
+    int64_t does_not_exist_id = 125469873;    // NOLINT
     EXPECT_EQ(bdao->get_booking(does_not_exist_id), std::nullopt);
 }
 
 TEST_F(BookingDataAccessTest, unique_reservation_id)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -154,18 +156,18 @@ TEST_F(BookingDataAccessTest, unique_reservation_id)
     int64_t reservation_id = get_timestamp_millisecond();
     Booking booking{
         .reservationId = reservation_id,
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2026-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     ASSERT_GT(bdao->insert_booking(booking, customer_id, flight_id), 0);
 
     // insert second different booking with same id
     Booking booking_second{
         .reservationId = reservation_id,
-        .date = "2026-10-17",
-        .isCanceled = false,
-        .seatNumber = 15 // NOLINT
+        .date          = "2026-10-17",
+        .isCanceled    = false,
+        .seatNumber    = 15    // NOLINT
     };
     EXPECT_EQ(bdao->insert_booking(booking_second, customer_id, flight_id), 0);
 }
@@ -173,15 +175,15 @@ TEST_F(BookingDataAccessTest, unique_reservation_id)
 TEST_F(BookingDataAccessTest, update_booking)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -211,20 +213,20 @@ TEST_F(BookingDataAccessTest, update_booking)
     // insert booking
     Booking booking{
         .reservationId = get_timestamp_millisecond(),
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2026-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     int booking_id = bdao->insert_booking(booking, customer_id, flight_id);
     ASSERT_GT(booking_id, 0);
-    
-    auto result = bdao->get_booking(booking.reservationId);
+
+    auto result           = bdao->get_booking(booking.reservationId);
 
     // update booking
-    auto reservation_id = get_timestamp_millisecond();
+    auto reservation_id   = get_timestamp_millisecond();
     result->reservationId = reservation_id;
-    result->date = "2026-10-17";
-    result->seatNumber = 15; //NOLINT
+    result->date          = "2026-10-17";
+    result->seatNumber    = 15;    // NOLINT
     EXPECT_GT(bdao->update_booking(*result), 0);
     // check
     auto result_second = bdao->get_booking(result->reservationId);
@@ -240,11 +242,11 @@ TEST_F(BookingDataAccessTest, update_booking)
 TEST_F(BookingDataAccessTest, update_non_existing_booking)
 {
     const auto does_not_exist_id = 12356487;
-    Booking booking{
-        .reservationId = does_not_exist_id,
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+    Booking    booking{
+           .reservationId = does_not_exist_id,
+           .date          = "2026-10-16",
+           .isCanceled    = false,
+           .seatNumber    = 10    // NOLINT
     };
     EXPECT_EQ(bdao->update_booking(booking), 0);
 }
@@ -252,15 +254,15 @@ TEST_F(BookingDataAccessTest, update_non_existing_booking)
 TEST_F(BookingDataAccessTest, delete_booking)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -288,13 +290,14 @@ TEST_F(BookingDataAccessTest, delete_booking)
     ASSERT_GT(flight_id, 0);
 
     /* to delete booking it would be have one year old minimum */
-    /* so insert booking with timestamp relative to last year about impl date (2025-10-16 00:00:00) */
+    /* so insert booking with timestamp relative to last year about impl date (2025-10-16
+     * 00:00:00) */
     const int64_t reservation_id = 1760565600;
-    Booking booking{
-        .reservationId = reservation_id,
-        .date = "2025-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+    Booking       booking{
+              .reservationId = reservation_id,
+              .date          = "2025-10-16",
+              .isCanceled    = false,
+              .seatNumber    = 10    // NOLINT
     };
     int booking_id = bdao->insert_booking(booking, customer_id, flight_id);
     ASSERT_GT(booking_id, 0);
@@ -307,15 +310,15 @@ TEST_F(BookingDataAccessTest, delete_booking)
 TEST_F(BookingDataAccessTest, delete_booking_failed)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -346,9 +349,9 @@ TEST_F(BookingDataAccessTest, delete_booking_failed)
     /* lets get timestamp now -> it will not pass one year */
     Booking booking{
         .reservationId = get_timestamp_millisecond(),
-        .date = "2025-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2025-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     int booking_id = bdao->insert_booking(booking, customer_id, flight_id);
     ASSERT_GT(booking_id, 0);
@@ -362,15 +365,15 @@ TEST_F(BookingDataAccessTest, delete_booking_failed)
 TEST_F(BookingDataAccessTest, cancel_booking)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -400,9 +403,9 @@ TEST_F(BookingDataAccessTest, cancel_booking)
     // insert booking
     Booking booking{
         .reservationId = get_timestamp_millisecond(),
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2026-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     int booking_id = bdao->insert_booking(booking, customer_id, flight_id);
     ASSERT_GT(booking_id, 0);
@@ -416,15 +419,15 @@ TEST_F(BookingDataAccessTest, cancel_booking)
 TEST_F(BookingDataAccessTest, list_bookings)
 {
     // insert a customer in customers table
-    Customer    customer{
-           .uuid       = uuid::generate(),
-           .firstName  = "Bob",
-           .name       = "Kitani",
-           .email      = "bob@test.com",
-           .phone      = "06 22 56 32 58",
-           .address    = "1 rue bobi 35000 Jamaiq",
-           .gender     = "",
-           .passportId = "AA0000000"};
+    Customer customer{
+        .uuid       = uuid::generate(),
+        .firstName  = "Bob",
+        .name       = "Kitani",
+        .email      = "bob@test.com",
+        .phone      = "06 22 56 32 58",
+        .address    = "1 rue bobi 35000 Jamaiq",
+        .gender     = "",
+        .passportId = "AA0000000"};
     int customer_id = cudao->insert_customer(customer);
     ASSERT_GT(customer_id, 0);
 
@@ -454,18 +457,18 @@ TEST_F(BookingDataAccessTest, list_bookings)
     // insert first booking
     Booking booking{
         .reservationId = get_timestamp_millisecond(),
-        .date = "2026-10-16",
-        .isCanceled = false,
-        .seatNumber = 10 // NOLINT
+        .date          = "2026-10-16",
+        .isCanceled    = false,
+        .seatNumber    = 10    // NOLINT
     };
     ASSERT_GT(bdao->insert_booking(booking, customer_id, flight_id), 0);
 
     // insert second booking
     Booking booking_second{
-        .reservationId = get_timestamp_millisecond() + 4, // ensure the gap
-        .date = "2026-10-17",
-        .isCanceled = false,
-        .seatNumber = 15 // NOLINT
+        .reservationId = get_timestamp_millisecond() + 4,    // ensure the gap
+        .date          = "2026-10-17",
+        .isCanceled    = false,
+        .seatNumber    = 15    // NOLINT
     };
     ASSERT_GT(bdao->insert_booking(booking_second, customer_id, flight_id), 0);
 
@@ -478,4 +481,4 @@ TEST_F(BookingDataAccessTest, list_bookings)
     EXPECT_EQ(bookings[1].date, "2026-10-17");
     EXPECT_EQ(bookings[1].seatNumber, 15);
 }
-} // namespace fisoa
+}    // namespace fisoa
