@@ -2,7 +2,6 @@
 #define FLIGHT_DATA_ACCESS_H
 
 #include "SQLiteCpp/Database.h"
-#include <memory>
 #include <optional>
 #include <vector>
 
