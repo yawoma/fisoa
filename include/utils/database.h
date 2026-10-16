@@ -19,7 +19,7 @@ public:
 };
 
 /**Getting millisecond timestamp since the Unix epoch*/
-uint64_t get_timestamp_millisecond();
+int64_t get_timestamp_millisecond();
 
 namespace uuid
 {
