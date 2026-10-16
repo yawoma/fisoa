@@ -23,9 +23,11 @@ struct Company
 class CompanyDataAccess
 {
 public:
-    CompanyDataAccess();
     explicit CompanyDataAccess(SQLite::Database& database);
-    ~CompanyDataAccess() = default;
+    ~CompanyDataAccess()                                       = default;
+
+    CompanyDataAccess(const CompanyDataAccess&)                = delete;
+    CompanyDataAccess&     operator=(const CompanyDataAccess&) = delete;
 
     int                    insert_company(const Company& company);
     int                    update_company(const Company& company);
@@ -33,11 +35,10 @@ public:
     std::optional<Company> get_company(const std::string& code_icao);
     std::vector<Company>   list_companies();
 
-    void                   init_database(SQLite::Database& database);
     int                    create_table();
 
 private:
-    SQLite::Database m_db;
+    SQLite::Database& m_db;
 };
 
 }    // namespace fisoa

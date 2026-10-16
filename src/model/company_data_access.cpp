@@ -9,17 +9,11 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace fisoa
 {
-CompanyDataAccess::CompanyDataAccess(): m_db("") {}
-
-CompanyDataAccess::CompanyDataAccess(SQLite::Database& database)
-    : m_db(std::move(database))
-{
-}
+CompanyDataAccess::CompanyDataAccess(SQLite::Database& database): m_db(database) {}
 
 int CompanyDataAccess::insert_company(const Company& company)
 {
@@ -108,7 +102,6 @@ std::optional<Company> CompanyDataAccess::get_company(const std::string& code_ic
         m_db, "SELECT id, name, codeIcao, codeIata, callSign"
               " FROM Companies WHERE codeIcao = ?");
     query.bind(1, code_icao);
-    Company company{};
     if (query.executeStep())
     {
         return Company{
@@ -140,11 +133,6 @@ std::vector<Company> CompanyDataAccess::list_companies()
     return companies;
 }
 
-void CompanyDataAccess::init_database(SQLite::Database& database)
-{
-    m_db = std::move(database);
-}
-
 int CompanyDataAccess::create_table()
 {
     int result = -1;
@@ -163,6 +151,7 @@ int CompanyDataAccess::create_table()
             get_logger().info("Companies table found.");
             result = 0;
         }
+        return result;
     }
     get_logger().error("Database have not been connected");
     return result;
