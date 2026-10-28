@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10...3.21)
+cmake_minimum_required(VERSION 3.10...3.22)
 
 project(Fisoa VERSION 0.1.0 LANGUAGES CXX)
 
@@ -22,6 +22,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Add SQLiteCpp wrap as submodule
+set(CMAKE_POLICY_VERSION_MINIMUM 3.10)  # silences the CMake Deprecation Warning
 add_subdirectory(third-party/SQLiteCpp) #
 
 # Add spdlog library
@@ -42,11 +43,15 @@ add_subdirectory(src)
 qt_add_executable(app app/main.cpp)
 
 qt_add_qml_module(app
-    URI App
+    URI FisoaApp
     VERSION 1.0
     QML_FILES
-        app/main.qml
+        qml/main.qml
+    # RESOURCES
+    #     qml/assets/image.png
 )
+
+set_target_properties(app PROPERTIES AUTOMOC ON)
 
 target_link_libraries(app 
     PUBLIC
@@ -81,9 +86,7 @@ if(BUILD_TESTS)
         gtest_force_shared_crt
         gtest_hide_internal_symbols
     )
-    # set_target_properties(gtest PROPERTIES FOLDER tests)
     # set_target_properties(gtest_main PROPERTIES FOLDER tests)
-    # set_target_properties(gmock PROPERTIES FOLDER tests)
     set_target_properties(gmock_main PROPERTIES FOLDER tests)
 
     add_subdirectory(tests)
