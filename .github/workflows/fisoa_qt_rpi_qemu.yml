@@ -1,0 +1,389 @@
+name: Project Build
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'qml/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - '.github/workflows/fisoa_qt_rpi_qemu.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'qml/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'tests/**'
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'First name'
+        required: true
+        default: 'Edem'
+      second_name:
+        description: 'Second name'
+        required: true
+        default: 'Manyo'
+
+env:
+  QT_VERSION: "6.8.2"
+  CROSS_TRIPLET: "aarch64-linux-gnu"
+  SYSROOT: "/usr/aarch64-linux-gnu"
+  QT_TARGET_DIR: "/opt/qt-aarch64"
+  QT_HOST_DIR: "/opt/qt-host"
+  CLANG_HOME: /usr/bin/llvm-20
+  # To be reviewed (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+# if : github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+jobs:
+  build-and-test:
+    name: Build and test
+
+    # Github runner this will run on
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    # delete build dir to be sure to clean caches
+    # - name: Clean build
+    #   run: rm -rf build/
+
+    # Install of dependencies. TODO: To be reviewed
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          build-essential \
+          libx11-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxrandr-dev \
+          uuid-dev \
+          cmake \
+          gcc-${CROSS_TRIPLET} \
+          g++-${CROSS_TRIPLET} \
+          gdb-multiarch \
+          qemu-user-static \
+          pkg-config \
+          xz-utils \
+          curl \
+          python3-pip \
+          ninja-build
+      shell: bash
+
+      # Cache the Qt builds
+    - name: Cache Qt target (aarch64)
+      id: qt-target-cache
+      uses: actions/cache@v4
+      with:
+          path: ${{ env.QT_TARGET_DIR }}
+          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu2404
+          restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
+    - name: Cache Qt host (x86_64)
+      id: qt-host-cache
+      uses: actions/cache@v4
+      with:
+          path: ${{ env.QT_HOST_DIR }}
+          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
+          restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
+    
+      # Install Qt host: needed as QT_HOST_PATH
+    - name: Install Qt host
+      if: steps.qt-host-cache.outputs.cache-hit != 'true'
+      run: |
+          set -euo pipefail
+          pip3 install aqtinstall --break-system-packages
+          aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
+      shell: bash
+
+      # Build Qt 6 for aarch64 : Quick/QML only
+    - name: Build Qt for aarch64
+      if: steps.qt-target-cache.outputs.cache-hit != 'true'
+      run: |
+          set -euo pipefail
+
+          QT_MAJOR="${QT_VERSION%%.*}"
+          mkdir -p /opt/qt-src && cd /opt/qt-src
+          curl -fsSL \
+            "https://download.qt.io/official_releases/qt/${QT_MAJOR}/${QT_VERSION}/qt-everywhere-src-${QT_VERSION}.tar.xz" \
+            -o qt-src.tar.xz
+          tar xJf qt-src.tar.xz
+          cd qt-everywhere-src-${QT_VERSION}
+
+          cmake -B build \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
+            -DQT_HOST_PATH=${QT_HOST_DIR}/Qt/${QT_VERSION}/gcc_64 \
+            -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_TESTS=ON \
+            -DQT_BUILD_EXAMPLES=OFF \
+            -DQT_BUILD_TESTS=OFF \
+            -DQT_BUILD_BENCHMARKS=OFF \
+            -DQT_BUILD_TOOLS=OFF \
+            -DQT_BUILD_QT3D=OFF \
+            -DQT_BUILD_QTCHARTS=OFF \
+            -DQT_BUILD_QTCONNECTIVITY=OFF \
+            -DQT_BUILD_QTDATAVISUALIZATION=OFF \
+            -DQT_BUILD_QTDOC=OFF \
+            -DQT_BUILD_QTGRAPHICALVIEW=OFF \
+            -DQT_BUILD_QTLOCATION=OFF \
+            -DQT_BUILD_QTMULTIMEDIA=OFF \
+            -DQT_BUILD_QTNETWORKAUTH=OFF \
+            -DQT_BUILD_QTQUICK3D=OFF \
+            -DQT_BUILD_QTQUICKWIDGETS=OFF \
+            -DQT_BUILD_QTSCXML=OFF \
+            -DQT_BUILD_QTSENSORS=OFF \
+            -DQT_BUILD_QTSTATEMACHINE=OFF \
+            -DQT_BUILD_QTSVG=OFF \
+            -DQT_BUILD_QTTOOLS=OFF \
+            -DQT_BUILD_QTWAYLAND=OFF \
+            -DQT_BUILD_QTWEBCHANNEL=OFF \
+            -DQT_BUILD_QTWEBENGINE=OFF \
+            -DQT_BUILD_QTWEBVIEW=OFF \
+            -DQT_BUILD_QTWEBSOCKETS=OFF \
+            -DQT_FEATURE_opengl=OFF \
+            -DQT_FEATURE_opengles2=OFF \
+            -DQT_FEATURE_egl=OFF \
+            -DQT_FEATURE_eglfs=OFF \
+            -DQT_FEATURE_xcb=OFF \
+            -DQT_FEATURE_xlib=OFF \
+            -DQT_FEATURE_cups=OFF \
+            -DQT_FEATURE_fontconfig=OFF \
+            -DQT_FEATURE_glib=OFF \
+            -DQT_FEATURE_dbus=OFF \
+            -DQT_FEATURE_gtk=OFF \
+            -DQT_FEATURE_icu=OFF \
+            -DQT_FEATURE_pcap=OFF \
+            -DQT_FEATURE_linuxfb=OFF \
+            -DQT_FEATURE_vnc=OFF \
+            -DQT_FEATURE_reduce_exports=ON
+
+          cmake --build build --parallel $(nproc) 
+          cmake --install build
+          echo "✓ Qt aarch64 (Quick) installed to ${QT_TARGET_DIR}"
+      shell: bash
+      # --config ${{ env.BUILD_TYPE }} TODO: To add to --build
+
+      # Cross-compile the app (QML app)
+    - name: Build application
+      run: |
+          set -euo pipefail
+          cmake -B build-aarch64 \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/aarch64-toolchain.cmake \
+            -DCMAKE_PREFIX_PATH=${QT_TARGET_DIR}
+          cmake --build build-aarch64 --parallel $(nproc)
+          echo "✓ Built: $(file build-aarch64/app)"
+      shell: bash
+    
+      # Run smoke test under QEMU user mode
+    - name: Run smoke test under QEMU
+      run: |
+          set -euo pipefail
+          echo "--- Verify QEMU target ---"
+          qemu-aarch64 -L ${SYSROOT} uname -m
+
+          echo "--- Running app (offscreen, 10s timeout) ---"
+          timeout 10 qemu-aarch64 -L ${SYSROOT} \
+            ./build-aarch64/app -platform offscreen || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 124 ]; then
+              echo "✓ App ran for 10s without crashing"
+            else
+              echo "✗ App exited with code $EXIT_CODE"
+              exit $EXIT_CODE
+            fi
+          }
+
+          # To run Qt Quick Test. Replace with CTest next step
+          # qemu-aarch64 -L ${SYSROOT} ./build-aarch64/app_utests
+
+          echo "--- All tests passed ---"
+      shell: bash
+    
+    # Execute the tests.
+    - name: Test
+      run: ctest --test-dir build --output-on-failure
+    
+      # Debug with gdb-multiarch
+    - name: Debug with gdb-multiarch
+      if: false  # set to false because this is optional (will set to true to enable)
+      run: |
+          set -euo pipefail
+          qemu-aarch64 -L ${SYSROOT} -g 1234 \
+            ./build-aarch64/app -platform offscreen &
+          QEMU_PID=$!
+          sleep 2
+
+          gdb-multiarch -batch \
+            -ex "target remote localhost:1234" \
+            -ex "break main" \
+            -ex "continue" \
+            -ex "info sharedlibrary" \
+            -ex "quit" \
+            ./build-aarch64/app
+
+          kill $QEMU_PID 2>/dev/null || true
+      shell: bash
+
+    # Upload artifacts
+    - name: Upload binary
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+          name: Fisoa-aarch64
+          path: build-aarch64/app
+          if-no-files-found: warn
+
+    - name: Upload QML dump (on failure)
+      if: failure()
+      run: |
+          timeout 5 qemu-aarch64 -L ${SYSROOT} \
+            ./build-aarch64/app -platform offscreen \
+            -qmljsdebugger=port:3456,block \
+            2>&1 | tee qml-debug.log || true
+      shell: bash
+
+    - name: Upload QML debug log
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+          name: qml-debug-log
+          path: qml-debug.log
+          if-no-files-found: ignore
+    
+    - name: Upload compile_commands.json
+      uses: actions/upload-artifact@v4
+      with:
+        name: compile_commands
+        path: build/compile_commands.json
+  
+  check_tidy:
+    name: Clang-tidy
+
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Install clang-tidy 20
+        run: |
+          sudo apt-get update
+          sudo apt-get purge --auto-remove llvm python3-lldb-14 llvm-14 -y
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+          sudo apt-get install -y clang-tidy-20
+        shell: bash
+      
+      - name: Clang-tidy version
+        run: |
+          clang-tidy-20 --version
+        shell: bash
+      
+      - name: Download Compilation Database
+        uses: actions/download-artifact@v4
+        with:
+          name: compile_commands
+          path: build
+      
+      - name: Verify compile_commands.json paths
+        run: |
+            cat build/compile_commands.json | jq -r '.[].file' | while read file; do
+              if [ ! -f "$file" ]; then
+                echo "Missing file: $file"
+                exit 1
+              fi
+            done
+        shell: bash
+
+      # Run clang tidy # -header-filter=.*
+      - name: Run clang-tidy
+        run: |
+          clang-tidy-20 -format-style=file -p build src/**/*.cpp
+        shell: bash
+          
+
+  check_formatting:
+    name: Clang-format
+
+    # Github runner this will run on
+    runs-on: ubuntu-latest
+    # env:
+    #   CLANG_HOME: /usr/bin/llvm-20
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Cache clang-format
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.CLANG_HOME }}
+        key: ${{ runner.os }}-clang-format-20-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+            ${{ runner.os }}-clang-format-20-
+
+    - name: Install clang-format 20
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format-20
+        export CLANG_HOME="/usr/lib/llvm-20"
+        echo "CLANG_HOME=$CLANG_HOME" >> $GITHUB_ENV
+      shell: bash
+    
+    - name: Clang-format version
+      run: |
+        clang-format-20 --version
+
+    # Run clang-format
+    - name: Run clang-format
+      run: |
+        clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/**/*.cpp
+      shell: bash
+    
+    - name: Check for unformatted files
+      run: |
+        git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
+      shell: bash
+  
+  tests_cppcheck:
+    name: Cppcheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      # Run Cppcheck using deep5050
+      - name: Run cppcheck
+        uses: deep5050/cppcheck-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          enable: style,warning,performance
+          exclude_check: "unusedFunction"
+          inconclusive: true
