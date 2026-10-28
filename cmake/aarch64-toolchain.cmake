@@ -1,0 +1,29 @@
+cmake_minimum_required(VERSION 3.22)
+include_guard(GLOBAL)
+
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+
+set(TARGET_SYSROOT /usr/aarch64-linux-gnu)
+set(CMAKE_SYSROOT ${TARGET_SYSROOT})
+set(CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT})
+set(CMAKE_LIBRARY_ARCHITECTURE aarch64-linux-gnu)
+
+set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
+
+set(ENV{PKG_CONFIG_LIBDIR}
+  ${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig
+  ${TARGET_SYSROOT}/usr/lib/pkgconfig
+)
+set(ENV{PKG_CONFIG_SYSROOT_DIR} ${TARGET_SYSROOT})
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+set(CMAKE_C_FLAGS_INIT "-march=armv8-a+crc+simd")
+set(CMAKE_CXX_FLAGS_INIT "-march=armv8-a+crc+simd")
+
+set(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;${SYSROOT}")
