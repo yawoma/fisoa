@@ -1,7 +1,7 @@
 # build
 build
 # ide folders
-.vscode
+# .vscode
 # cache
 .cache
 # don't take the log files
