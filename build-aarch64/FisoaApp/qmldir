@@ -1,5 +1,0 @@
-module FisoaApp
-typeinfo app.qmltypes
-prefer :/qt/qml/FisoaApp/
-Main 1.0 qml/Main.qml
-
