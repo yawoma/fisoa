@@ -1,0 +1,7 @@
+--resource
+/home/edem/wd/fisoa/build-aarch64/.qt/rcc/qmake_FisoaApp.qrc
+--resource
+/home/edem/wd/fisoa/build-aarch64/.qt/rcc/app_raw_qml_0.qrc
+--resource
+/home/edem/wd/fisoa/build-aarch64/.qt/rcc/app_raw_qml_0_extra_qmldirs.qrc
+/qt/qml/FisoaApp/qml/Main.qml

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/FisoaApp">
+    <file alias="qmldir">/home/edem/wd/fisoa/build-aarch64/FisoaApp/qmldir</file>
+  </qresource>
+</RCC>
+
