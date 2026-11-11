@@ -8,13 +8,13 @@ int main(int argc, char** argv)
         //NOLINTNEXTLINE (cppcoreguidelines-pro-bounds-pointer-arithmetic)
         std::cout << "Argument " << i << ": " << argv[i] << '\n';
     }
-    // QGuiApplication app(argc, argv); // @TODO: To be reviewed
+    QGuiApplication app(argc, argv); // @TODO: To be reviewed
 
     QQmlApplicationEngine engine;
-    engine.loadFromModule("App", "main");
+    engine.loadFromModule("FisoaApp", "Main");
     if (engine.rootObjects().isEmpty())
     {
         return -1;
     }
-    return QGuiApplication::exec(); // (readability-static-accessed-through-instance)
+    return app.exec(); //NOLINT (readability-static-accessed-through-instance)
 }
