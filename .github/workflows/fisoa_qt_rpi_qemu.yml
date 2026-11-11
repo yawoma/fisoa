@@ -77,11 +77,15 @@ jobs:
         EOF
       shell: bash
 
-    # Install of dependencies. TODO: To be reviewed
+    # Install of dependencies. TODO: To be reviewed (-y --no-install-recommends)
     - name: Install Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
+        for i in {1..5}; do
+           sudo apt-get update && break
+           echo "apt-get update failed, retrying ($i/5)..."
+           sleep $((i * 5))
+        done
+        sudo apt-get install -y \
           build-essential \
           libx11-dev \
           libxcursor-dev \
