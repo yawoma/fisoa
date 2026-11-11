@@ -159,7 +159,7 @@ jobs:
           aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
       shell: bash
 
-      # Build Qt 6 for aarch64 : Quick/QML only (/Qt/${QT_VERSION}/gcc_64)
+      # Build Qt 6 for aarch64 : Quick/QML only
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
       run: |
