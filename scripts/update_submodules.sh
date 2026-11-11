@@ -1,4 +1,4 @@
-#! bin/bash
+#!/bin/bash
 
 # Save the current uncommitted works
 git stash
@@ -12,6 +12,7 @@ git submodule foreach --recursive 'git describe --tags --abbrev=0'
 # Commit the updates
 git add .
 git commit -m "Updated submodules to latest commits"
+git push
 
 # Reapplies the stashed works
 git stash pop
