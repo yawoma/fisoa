@@ -165,10 +165,10 @@ jobs:
       run: |
           set -euo pipefail
 
-          QT_MAJOR="${QT_VERSION%%.*}"
+          QT_MINOR="${QT_VERSION%.*}"
           mkdir -p /opt/qt-src && cd /opt/qt-src
           curl -fsSL \
-            "https://download.qt.io/official_releases/qt/${QT_MAJOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
+            "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
             -o qt-src.tar.xz
           tar xJf qt-src.tar.xz
           cd qtbase-everywhere-src-${QT_VERSION}
