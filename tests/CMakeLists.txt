@@ -16,7 +16,7 @@ target_link_libraries(app_utests
 )
 
 # Register tests with CMake/CTest and automatically parses test cases 
-# (like TEST or TEST_F) in the binary
-gtest_discover_tests(app_utests)
+# (like TEST or TEST_F) in the binary # PRE_TEST -> prevent qemu ran tests during compile
+gtest_discover_tests(app_utests DISCOVERY_MODE PRE_TEST)
 
 add_test(NAME app_utests COMMAND app_utests)
