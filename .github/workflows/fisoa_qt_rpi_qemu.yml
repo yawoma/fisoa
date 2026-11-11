@@ -9,6 +9,7 @@ on:
       - 'qml/**'
       - 'CMakeLists.txt'
       - 'cmake/**'
+      - 'tests/**'
       - '.github/workflows/fisoa_qt_rpi_qemu.yml'
   pull_request:
     branches: [ "main" ]
@@ -31,7 +32,7 @@ on:
         default: 'Manyo'
 
 env:
-  QT_VERSION: "6.8.2"
+  QT_VERSION: "6.11.2"
   CROSS_TRIPLET: "aarch64-linux-gnu"
   SYSROOT: "/usr/aarch64-linux-gnu"
   QT_TARGET_DIR: "/opt/qt-aarch64"
@@ -59,6 +60,17 @@ jobs:
     # - name: Clean build
     #   run: rm -rf build/
 
+    - name: Setup arm64 cross-compile
+      run: |
+        sudo dpkg --add-architecture arm64
+        sudo sed -i -E 's/^deb(-src)? /deb\1 [arch=amd64,i386] /' /etc/apt/sources.list
+        source /etc/lsb-release
+        sudo tee /etc/apt/sources.list.d/arm64.list <<EOF
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME} main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-updates main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-security main restricted universe multiverse
+        EOF
+
     # Install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
       run: |
@@ -70,7 +82,7 @@ jobs:
           libxi-dev \
           libxinerama-dev \
           libxrandr-dev \
-          uuid-dev \
+          uuid-dev:arm64 \
           cmake \
           gcc-${CROSS_TRIPLET} \
           g++-${CROSS_TRIPLET} \
@@ -89,14 +101,14 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_TARGET_DIR }}
-          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu2404
+          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu$(${ImageVersion//./})
           restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
     - name: Cache Qt host (x86_64)
       id: qt-host-cache
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_HOST_DIR }}
-          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
+          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu$(${ImageVersion//./})
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH
@@ -117,19 +129,17 @@ jobs:
           QT_MAJOR="${QT_VERSION%%.*}"
           mkdir -p /opt/qt-src && cd /opt/qt-src
           curl -fsSL \
-            "https://download.qt.io/official_releases/qt/${QT_MAJOR}/${QT_VERSION}/qt-everywhere-src-${QT_VERSION}.tar.xz" \
+            "https://download.qt.io/official_releases/qt/${QT_MAJOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
             -o qt-src.tar.xz
           tar xJf qt-src.tar.xz
-          cd qt-everywhere-src-${QT_VERSION}
+          cd qtbase-everywhere-src-${QT_VERSION}
 
           cmake -B build \
             -GNinja \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_DIR}/Qt/${QT_VERSION}/gcc_64 \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DBUILD_TESTS=ON \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
             -DQT_BUILD_BENCHMARKS=OFF \
@@ -172,11 +182,10 @@ jobs:
             -DQT_FEATURE_vnc=OFF \
             -DQT_FEATURE_reduce_exports=ON
 
-          cmake --build build --parallel $(nproc) 
-          cmake --install build
+          ninja -C build -j$(nproc)
+          ninja -C build install
           echo "✓ Qt aarch64 (Quick) installed to ${QT_TARGET_DIR}"
       shell: bash
-      # --config ${{ env.BUILD_TYPE }} TODO: To add to --build
 
       # Cross-compile the app (QML app)
     - name: Build application
@@ -184,9 +193,11 @@ jobs:
           set -euo pipefail
           cmake -B build-aarch64 \
             -GNinja \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=cmake/aarch64-toolchain.cmake \
-            -DCMAKE_PREFIX_PATH=${QT_TARGET_DIR}
+            -DCMAKE_PREFIX_PATH=${QT_TARGET_DIR} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_TESTS=ON
           cmake --build build-aarch64 --parallel $(nproc)
           echo "✓ Built: $(file build-aarch64/app)"
       shell: bash
@@ -210,19 +221,19 @@ jobs:
             fi
           }
 
-          # To run Qt Quick Test. Replace with CTest next step
-          # qemu-aarch64 -L ${SYSROOT} ./build-aarch64/app_utests
+          # To run Qt Quick Test?. @TODO: Replace with CTest next step?
+          qemu-aarch64 -L ${SYSROOT} ./build-aarch64/app_utests
 
           echo "--- All tests passed ---"
       shell: bash
     
     # Execute the tests.
     - name: Test
-      run: ctest --test-dir build --output-on-failure
+      run: ctest --test-dir build-aarch64 --output-on-failure
     
       # Debug with gdb-multiarch
     - name: Debug with gdb-multiarch
-      if: false  # set to false because this is optional (will set to true to enable)
+      if: false  # set to false because this is optional (will be set to true to enable)
       run: |
           set -euo pipefail
           qemu-aarch64 -L ${SYSROOT} -g 1234 \
@@ -271,7 +282,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: compile_commands
-        path: build/compile_commands.json
+        path: build-aarch64/compile_commands.json
   
   check_tidy:
     name: Clang-tidy
@@ -305,11 +316,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: compile_commands
-          path: build
+          path: build-aarch64
       
       - name: Verify compile_commands.json paths
         run: |
-            cat build/compile_commands.json | jq -r '.[].file' | while read file; do
+            cat build-aarch64/compile_commands.json | jq -r '.[].file' | while read file; do
               if [ ! -f "$file" ]; then
                 echo "Missing file: $file"
                 exit 1
@@ -320,14 +331,14 @@ jobs:
       # Run clang tidy # -header-filter=.*
       - name: Run clang-tidy
         run: |
-          clang-tidy-20 -format-style=file -p build src/**/*.cpp
+          clang-tidy-20 -format-style=file -p build-aarch64 src/**/*.cpp
         shell: bash
           
 
   check_formatting:
     name: Clang-format
 
-    # Github runner this will run on
+    # Github runner. this will run on
     runs-on: ubuntu-latest
     # env:
     #   CLANG_HOME: /usr/bin/llvm-20
