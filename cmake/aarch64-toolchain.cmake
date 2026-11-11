@@ -20,8 +20,12 @@ else()
     message(FATAL_ERROR "Unsupported distro: cannot determine aarch64 sysroot")
 endif()
 
-set(CMAKE_SYSROOT ${TARGET_SYSROOT})
+# set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 set(CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT} /opt/qt-aarch64)
+if(EXISTS "/etc/debian_version")
+    set(CMAKE_INCLUDE_PATH /usr/include/aarch64-linux-gnu)
+    set(CMAKE_LIBRARY_PATH /usr/lib/aarch64-linux-gnu)
+endif()
 set(QT_HOST_PATH /usr)
 
 set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
