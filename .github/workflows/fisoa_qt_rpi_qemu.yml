@@ -63,19 +63,48 @@ jobs:
     - name: Setup arm64 cross-compile
       run: |
         sudo dpkg --add-architecture arm64
-        # Restrict existing deb822 sources to native arch
-        sudo sed -i '/^Types: deb$/a Architectures: amd64' /etc/apt/sources.list.d/ubuntu.sources
-
-        # Fallback for older images where sources are in the one-line format
-        sudo sed -i -E 's/^deb(-src)? /deb\1 [arch=amd64,i386] /' /etc/apt/sources.list 2>/dev/null || true
-
-        source /etc/lsb-release
-        sudo tee /etc/apt/sources.list.d/arm64.list <<EOF
-        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME} main restricted universe multiverse
-        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-updates main restricted universe multiverse
-        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-security main restricted universe multiverse
+        CODENAME=$(lsb_release -cs)
+        sudo tee /etc/apt/sources.list.d/arm64-cross.sources <<EOF
+        Types: deb
+        URIs: http://mirrors.dotsrc.org/ubuntu-ports/
+        Suites: ${CODENAME} ${CODENAME}-updates ${CODENAME}-security
+        Components: main restricted universe multiverse
+        Architectures: arm64
+        Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
         EOF
       shell: bash
+    
+    - name: Fix all apt sources
+      run: |
+        CODENAME=$(lsb_release -cs)
+        # Override DNS as a safety net
+        echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+
+        # Replace amd64 sources
+        sudo tee /etc/apt/sources.list.d/ubuntu.sources <<EOF
+        Types: deb
+        URIs: http://mirrors.dotsrc.org/ubuntu/
+        Suites: ${CODENAME} ${CODENAME}-updates ${CODENAME}-security
+        Components: main restricted universe multiverse
+        Architectures: amd64
+        Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+        EOF
+
+        # Add arm64 sources (the one your workflow was missing)
+        sudo tee /etc/apt/sources.list.d/arm64-cross.sources <<EOF
+        Types: deb
+        URIs: http://mirrors.dotsrc.org/ubuntu-ports/
+        Suites: ${CODENAME} ${CODENAME}-updates ${CODENAME}-security
+        Components: main restricted universe multiverse
+        Architectures: arm64
+        Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+        EOF
+
+        # Remove the broken default sources
+        sudo rm -f /etc/apt/sources.list /etc/apt/apt-mirrors.txt
+
+        sudo apt-get update
+      shell: bash 
 
     # Install of dependencies. TODO: To be reviewed (-y --no-install-recommends)
     - name: Install Dependencies
