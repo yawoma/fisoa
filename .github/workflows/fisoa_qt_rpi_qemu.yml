@@ -46,8 +46,8 @@ jobs:
   build-and-test:
     name: Build and test
 
-    # Github runner this will run on
-    runs-on: ubuntu-latest
+    # Github runner this will run on TODO: To be reviewed for latest release
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
 
     steps:
