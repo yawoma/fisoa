@@ -63,13 +63,19 @@ jobs:
     - name: Setup arm64 cross-compile
       run: |
         sudo dpkg --add-architecture arm64
-        sudo sed -i -E 's/^deb(-src)? /deb\1 [arch=amd64,i386] /' /etc/apt/sources.list
+        # Restrict existing deb822 sources to native arch
+        sudo sed -i '/^Types: deb$/a Architectures: amd64' /etc/apt/sources.list.d/ubuntu.sources
+
+        # Fallback for older images where sources are in the one-line format
+        sudo sed -i -E 's/^deb(-src)? /deb\1 [arch=amd64,i386] /' /etc/apt/sources.list 2>/dev/null || true
+
         source /etc/lsb-release
         sudo tee /etc/apt/sources.list.d/arm64.list <<EOF
         deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME} main restricted universe multiverse
         deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-updates main restricted universe multiverse
         deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${DISTRIB_CODENAME}-security main restricted universe multiverse
         EOF
+      shell: bash
 
     # Install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
@@ -87,7 +93,7 @@ jobs:
           gcc-${CROSS_TRIPLET} \
           g++-${CROSS_TRIPLET} \
           gdb-multiarch \
-          qemu-user-static \
+          qemu-user \
           pkg-config \
           xz-utils \
           curl \
