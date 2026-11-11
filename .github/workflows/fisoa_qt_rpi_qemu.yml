@@ -159,7 +159,7 @@ jobs:
           aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
       shell: bash
 
-      # Build Qt 6 for aarch64 : Quick/QML only
+      # Build Qt 6 for aarch64 : Quick/QML only (/Qt/${QT_VERSION}/gcc_64)
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
       run: |
@@ -177,7 +177,7 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_HOST_PATH=${QT_HOST_DIR}/Qt/${QT_VERSION}/gcc_64 \
+            -DQT_HOST_PATH=${QT_HOST_DIR} \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
