@@ -1,4 +1,4 @@
-#! bin/bash
+#!/bin/bash
 
 # populate the sysroot on fedora with necessary libs.
 # prerequisite: install first the following libs:
