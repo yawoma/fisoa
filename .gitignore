@@ -1,8 +1,11 @@
 # build
-build
+build/
+build-aarch64/
 # ide folders
 # .vscode
 # cache
-.cache
+.cache/
 # don't take the log files
-logs
+logs/
+# qemu user mode files
+qemu_*
