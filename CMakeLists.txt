@@ -36,7 +36,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # To add Qt6
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 
-qt_standard_project_setup(REQUIRES 6.8) # to set qt policies QTP0001 + QTP0004 + QTP0005 to NEW
+qt_standard_project_setup(REQUIRES 6.11) # to set qt policies QTP0001 + QTP0004 + QTP0005 to NEW
 
 add_subdirectory(src)
 
@@ -46,7 +46,7 @@ qt_add_qml_module(app
     URI FisoaApp
     VERSION 1.0
     QML_FILES
-        qml/main.qml
+        qml/Main.qml
     # RESOURCES
     #     qml/assets/image.png
 )
