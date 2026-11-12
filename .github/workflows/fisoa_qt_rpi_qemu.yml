@@ -168,7 +168,7 @@ jobs:
     #   run: sudo rm -rf /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}/build/
 
       # Build Qt 6 for aarch64 : Quick/QML only (-DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/ \)
-      # # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake \
+      # # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake lib/cmake/Qt6HostInfo\
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
       run: |
@@ -186,7 +186,7 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQt6HostInfo_DIR=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib/cmake/Qt6HostInfo \
+            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/ \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
