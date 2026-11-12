@@ -169,6 +169,15 @@ jobs:
           sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
       shell: bash
     
+    - name: Fix syncqt location
+      # Qt6CoreToolsAdditionalTargetInfo.cmake expects syncqt at /usr/bin/syncqt
+      # but Ubuntu installs it at /usr/lib/qt6/libexec/syncqt
+      run: |
+        sudo ln -sf /usr/lib/qt6/libexec/syncqt /usr/bin/syncqt
+        # Verify
+        /usr/bin/syncqt --version
+      shell: bash
+    
     # # delete build dir to be sure to clean caches
     # - name: Clean qt aarch64 build dir
     #   run: sudo rm -rf /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}/build/
