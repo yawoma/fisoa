@@ -133,6 +133,11 @@ jobs:
           python3-pip \
           ninja-build
       shell: bash
+    
+    - name: Clean local Qt dirs
+      run: |
+        rm -rf "${QT_TARGET_DIR:?}" "${QT_HOST_DIR:?}"
+      shell: bash 
 
       # Cache the Qt builds
     - name: Cache Qt target (aarch64)
