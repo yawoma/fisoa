@@ -140,14 +140,14 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_TARGET_DIR }}
-          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu$(${ImageVersion//./})
+          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu${{ matrix.ubuntu_version }}
           restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
     - name: Cache Qt host (x86_64)
       id: qt-host-cache
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_HOST_DIR }}
-          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu$(${ImageVersion//./})
+          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu${{ matrix.ubuntu_version }}
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH
@@ -177,7 +177,7 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
+            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/linux_gcc_64 \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
