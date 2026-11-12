@@ -140,14 +140,14 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_TARGET_DIR }}
-          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu${{ matrix.ubuntu_version }}
+          key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
     - name: Cache Qt host (x86_64)
       id: qt-host-cache
       uses: actions/cache@v4
       with:
           path: ${{ env.QT_HOST_DIR }}
-          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu${{ matrix.ubuntu_version }}
+          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH
