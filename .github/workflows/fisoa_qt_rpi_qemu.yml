@@ -134,10 +134,10 @@ jobs:
           ninja-build
       shell: bash
     
-    - name: Clean local Qt dirs
-      run: |
-        rm -rf "${QT_TARGET_DIR:?}" "${QT_HOST_DIR:?}"
-      shell: bash 
+    # - name: Clean local Qt dirs
+    #   run: |
+    #     rm -rf "${QT_TARGET_DIR:?}" "${QT_HOST_DIR:?}"
+    #   shell: bash 
 
       # Cache the Qt builds
     - name: Cache Qt target (aarch64)
@@ -147,26 +147,27 @@ jobs:
           path: ${{ env.QT_TARGET_DIR }}
           key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
-    - name: Cache Qt host (x86_64)
-      id: qt-host-cache
-      uses: actions/cache@v4
-      with:
-          path: ${{ env.QT_HOST_DIR }}
-          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
-          restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
+    # - name: Cache Qt host (x86_64)
+    #   id: qt-host-cache
+    #   uses: actions/cache@v4
+    #   with:
+    #       path: ${{ env.QT_HOST_DIR }}
+    #       key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
+    #       restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH
-    - name: Install Qt host
-      if: steps.qt-host-cache.outputs.cache-hit != 'true'
-      run: |
-          set -euo pipefail
-          pip3 install aqtinstall --break-system-packages
-          aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
-      shell: bash
-    # - name: Install host Qt via apt
+    # - name: Install Qt host
+    #   if: steps.qt-host-cache.outputs.cache-hit != 'true'
     #   run: |
-    #       sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
+    #       set -euo pipefail
+    #       pip3 install aqtinstall --break-system-packages
+    #       aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
     #   shell: bash
+    - name: Install host Qt via apt
+      run: |
+          sudo apt-get update 
+          sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
+      shell: bash
     
     # # delete build dir to be sure to clean caches
     # - name: Clean qt aarch64 build dir
@@ -191,7 +192,8 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib/cmake/ \
+            -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
+            -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
