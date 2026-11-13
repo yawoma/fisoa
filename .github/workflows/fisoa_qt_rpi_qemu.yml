@@ -173,6 +173,7 @@ jobs:
       # Qt6CoreToolsAdditionalTargetInfo.cmake expects syncqt at /usr/bin/syncqt
       # but Ubuntu installs it at /usr/lib/qt6/libexec/syncqt
       run: |
+        ls /usr/lib/qt6/libexec/syncqt
         sudo ln -sf /usr/lib/qt6/libexec/syncqt /usr/bin/syncqt
         # Verify
         /usr/bin/syncqt --version
