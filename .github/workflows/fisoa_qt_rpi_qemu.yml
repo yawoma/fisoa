@@ -252,6 +252,13 @@ jobs:
             exit 1
           fi
           echo "Qt6CoreTools_DIR=$CORETOOLS_DIR"
+          
+          WIDGETSTOOLS_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6WidgetsTools" 2>/dev/null | head -1)
+          if [ -z "$CORETOOLS_DIR" ]; then
+            echo "FATAL: Qt6WidgetsTools directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
+            exit 1
+          fi
+          echo "Qt6WidgetsTools_DIR=$WIDGETSTOOLS_DIR"
 
           cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
 
@@ -262,6 +269,7 @@ jobs:
             -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64\
             -DQt6HostInfo_DIR=${HOSTINFO_DIR} \
             -DQt6CoreTools_DIR=${CORETOOLS_DIR} \
+            -DQt6WidgetsTools_DIR=${WIDGETSTOOLS_DIR} \
             -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
