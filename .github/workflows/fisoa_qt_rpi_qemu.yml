@@ -214,6 +214,15 @@ jobs:
     # - name: Clean qt aarch64 build dir
     #   run: sudo rm -rf /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}/build/
 
+    - name: Verify Qt6HostInfo
+      run: |
+        echo "--- Search for Qt6HostInfoConfig.cmake ---"
+        find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -name "Qt6HostInfoConfig.cmake" 2>/dev/null
+        echo "--- lib/cmake contents ---"
+        ls "${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib/cmake/" 2>/dev/null || \
+        ls "${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib64/cmake/" 2>/dev/null
+      shell: bash
+
       # Build Qt 6 for aarch64 : Quick/QML only (-DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/ \)
       # # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake lib/cmake/Qt6HostInfo\
       # -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
@@ -229,6 +238,14 @@ jobs:
           #   "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
           #   -o qt-src.tar.xz
           # tar xJf qt-src.tar.xz
+          # Locate the actual file (handles lib/ vs lib64/ differences)
+          HOSTINFO_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6HostInfo" 2>/dev/null | head -1)
+          if [ -z "$HOSTINFO_DIR" ]; then
+            echo "FATAL: Qt6HostInfo directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
+            exit 1
+          fi
+          echo "Qt6HostInfo_DIR=$HOSTINFO_DIR"
+
           cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
 
           cmake -B build \
@@ -236,6 +253,8 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64\
+            -DQt6HostInfo_DIR=${HOSTINFO_DIR} \
+            -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
