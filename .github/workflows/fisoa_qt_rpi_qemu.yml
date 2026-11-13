@@ -188,6 +188,7 @@ jobs:
           -DQT_BUILD_EXAMPLES=OFF \
           -DQT_BUILD_TOOLS=ON \
           -DQT_BUILD_TESTS=OFF
+        cmake --build .
         cmake --build . --target syncqt
         cmake --install .
       shell: bash 
