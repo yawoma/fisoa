@@ -138,6 +138,8 @@ jobs:
     #   run: |
     #     rm -rf "${QT_TARGET_DIR:?}" "${QT_HOST_DIR:?}"
     #   shell: bash 
+        # qt6-base-dev \
+        # qt6-base-dev-tools \
 
       # Cache the Qt builds
     - name: Cache Qt target (aarch64)
@@ -147,13 +149,13 @@ jobs:
           path: ${{ env.QT_TARGET_DIR }}
           key: qt-${{ env.QT_VERSION }}-aarch64-quick-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-aarch64-
-    # - name: Cache Qt host (x86_64)
-    #   id: qt-host-cache
-    #   uses: actions/cache@v4
-    #   with:
-    #       path: ${{ env.QT_HOST_DIR }}
-    #       key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
-    #       restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
+    - name: Cache Qt host (x86_64)
+      id: qt-host-cache
+      uses: actions/cache@v4
+      with:
+          path: ${{ env.QT_HOST_DIR }}
+          key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
+          restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH
     # - name: Install Qt host
@@ -163,29 +165,38 @@ jobs:
     #       pip3 install aqtinstall --break-system-packages
     #       aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
     #   shell: bash
-    - name: Install host Qt via apt
+    # - name: Install host Qt via apt
+    #   run: |
+    #       sudo apt-get update 
+    #       sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
+    #   shell: bash
+    - name: Build Qt host tools from source
       run: |
-          sudo apt-get update 
-          sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
-      shell: bash
+        cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
+        mkdir -p build-host && cd build-host
+        cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/{QT_VERSION}/gcc_64
+        cmake --build . # --target syncqt
+        cmake --install .
+      shell: bash 
     
-    - name: Fix syncqt location
-      # Qt6CoreToolsAdditionalTargetInfo.cmake expects syncqt at /usr/bin/syncqt
-      # but Ubuntu installs it somewhere.
-      run: |
-        # Find where syncqt actually is
-        SYNCQT=$(find /usr/lib/qt6 /usr/bin /usr/lib/x86_64-linux-gnu \
-                -name "syncqt" -type f 2>/dev/null | head -1)
-        if [ -z "$SYNCQT" ]; then
-          echo "ERROR: syncqt not found anywhere"
-          find /usr -name "syncqt" 2>/dev/null
-          exit 1
-        fi
-        echo "Found syncqt at: $SYNCQT"
-        # CMake expects it at /usr/bin/syncqt (QT_HOST_PATH=/usr, then bin/syncqt)
-        sudo ln -sf "$SYNCQT" /usr/bin/syncqt
-        /usr/bin/syncqt --version
-      shell: bash
+    # - name: Fix syncqt location
+    #   # Qt6CoreToolsAdditionalTargetInfo.cmake expects syncqt at /usr/bin/syncqt
+    #   # but Ubuntu installs it somewhere.
+    #   run: |
+    #     # Find where syncqt actually is
+    #     SYNCQT=$(find /usr/lib/qt6 /usr/bin /usr/lib/x86_64-linux-gnu \
+    #             -name "syncqt" -type f 2>/dev/null | head -1)
+    #     if [ -z "$SYNCQT" ]; then
+    #       echo "ERROR: syncqt not found anywhere"
+    #       find /usr -name "syncqt" 2>/dev/null
+    #       exit 1
+    #     fi
+    #     echo "Found syncqt at: $SYNCQT"
+    #     # CMake expects it at /usr/bin/syncqt (QT_HOST_PATH=/usr, then bin/syncqt)
+    #     sudo ln -sf "$SYNCQT" /usr/bin/syncqt
+    #     /usr/bin/syncqt --version
+    #   shell: bash
     
     # # delete build dir to be sure to clean caches
     # - name: Clean qt aarch64 build dir
@@ -193,6 +204,8 @@ jobs:
 
       # Build Qt 6 for aarch64 : Quick/QML only (-DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/ \)
       # # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake lib/cmake/Qt6HostInfo\
+      # -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
+      # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake \
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
       run: |
@@ -210,8 +223,7 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
-            -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake \
+            -DQT_HOST_PATH=${QT_HOST_DIR}/{QT_VERSION}/gcc_64\
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
