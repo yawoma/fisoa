@@ -172,7 +172,15 @@ jobs:
     #   shell: bash
     - name: Build Qt host tools from source
       run: |
-        cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
+        set -euo pipefail
+
+        QT_MINOR="${QT_VERSION%.*}"
+        mkdir -p /opt/qt-src && cd /opt/qt-src
+        curl -fsSL \
+            "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
+            -o qt-src.tar.xz
+        tar xJf qt-src.tar.xz
+        cd qtbase-everywhere-src-${QT_VERSION}
         mkdir -p build-host && cd build-host
         cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/{QT_VERSION}/gcc_64
@@ -211,13 +219,13 @@ jobs:
       run: |
           set -euo pipefail
 
-          QT_MINOR="${QT_VERSION%.*}"
-          mkdir -p /opt/qt-src && cd /opt/qt-src
-          curl -fsSL \
-            "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
-            -o qt-src.tar.xz
-          tar xJf qt-src.tar.xz
-          cd qtbase-everywhere-src-${QT_VERSION}
+          # QT_MINOR="${QT_VERSION%.*}"
+          # mkdir -p /opt/qt-src && cd /opt/qt-src
+          # curl -fsSL \
+          #   "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
+          #   -o qt-src.tar.xz
+          # tar xJf qt-src.tar.xz
+          cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
 
           cmake -B build \
             -GNinja \
