@@ -188,7 +188,7 @@ jobs:
           -DQT_BUILD_EXAMPLES=OFF \
           -DQT_BUILD_TOOLS=ON \
           -DQT_BUILD_TESTS=OFF
-        cmake --build . # --target syncqt
+        cmake --build . --target syncqt
         cmake --install .
       shell: bash 
     
@@ -246,6 +246,13 @@ jobs:
           fi
           echo "Qt6HostInfo_DIR=$HOSTINFO_DIR"
 
+          CORETOOLS_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6CoreTools" 2>/dev/null | head -1)
+          if [ -z "$CORETOOLS_DIR" ]; then
+            echo "FATAL: Qt6CoreTools directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
+            exit 1
+          fi
+          echo "Qt6CoreTools_DIR=$CORETOOLS_DIR"
+
           cd /opt/qt-src/qtbase-everywhere-src-${QT_VERSION}
 
           cmake -B build \
@@ -254,6 +261,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64\
             -DQt6HostInfo_DIR=${HOSTINFO_DIR} \
+            -DQt6CoreTools_DIR=${CORETOOLS_DIR} \
             -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
