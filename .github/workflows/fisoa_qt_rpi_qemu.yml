@@ -183,7 +183,10 @@ jobs:
         cd qtbase-everywhere-src-${QT_VERSION}
         mkdir -p build-host && cd build-host
         cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/{QT_VERSION}/gcc_64
+          -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
+          -DINPUT_opengl=no \
+          -DQT_BUILD_EXAMPLES=OFF \
+          -DQT_BUILD_TESTS=OFF
         cmake --build . # --target syncqt
         cmake --install .
       shell: bash 
