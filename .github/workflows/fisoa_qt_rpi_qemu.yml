@@ -186,6 +186,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
           -DINPUT_opengl=no \
           -DQT_BUILD_EXAMPLES=OFF \
+          -DQT_BUILD_TOOLS=ON \
           -DQT_BUILD_TESTS=OFF
         cmake --build . # --target syncqt
         cmake --install .
