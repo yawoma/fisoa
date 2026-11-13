@@ -171,11 +171,19 @@ jobs:
     
     - name: Fix syncqt location
       # Qt6CoreToolsAdditionalTargetInfo.cmake expects syncqt at /usr/bin/syncqt
-      # but Ubuntu installs it at /usr/lib/qt6/libexec/syncqt
+      # but Ubuntu installs it somewhere.
       run: |
-        ls /usr/lib/qt6/libexec/syncqt
-        sudo ln -sf /usr/lib/qt6/libexec/syncqt /usr/bin/syncqt
-        # Verify
+        # Find where syncqt actually is
+        SYNCQT=$(find /usr/lib/qt6 /usr/bin /usr/lib/x86_64-linux-gnu \
+                -name "syncqt" -type f 2>/dev/null | head -1)
+        if [ -z "$SYNCQT" ]; then
+          echo "ERROR: syncqt not found anywhere"
+          find /usr -name "syncqt" 2>/dev/null
+          exit 1
+        fi
+        echo "Found syncqt at: $SYNCQT"
+        # CMake expects it at /usr/bin/syncqt (QT_HOST_PATH=/usr, then bin/syncqt)
+        sudo ln -sf "$SYNCQT" /usr/bin/syncqt
         /usr/bin/syncqt --version
       shell: bash
     
