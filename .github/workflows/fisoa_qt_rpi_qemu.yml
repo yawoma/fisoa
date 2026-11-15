@@ -177,7 +177,29 @@ jobs:
           -DINPUT_opengl=no \
           -DQT_BUILD_EXAMPLES=OFF \
           -DQT_BUILD_TOOLS=ON \
-          -DQT_BUILD_TESTS=OFF
+          -DQT_BUILD_TESTS=OFF \
+          -DQT_BUILD_BENCHMARKS=OFF \
+          -DQT_BUILD_QT3D=OFF \
+          -DQT_BUILD_QTCHARTS=OFF \
+          -DQT_BUILD_QTCONNECTIVITY=OFF \
+          -DQT_BUILD_QTDATAVISUALIZATION=OFF \
+          -DQT_BUILD_QTDOC=OFF \
+          -DQT_BUILD_QTGRAPHICALVIEW=OFF \
+          -DQT_BUILD_QTLOCATION=OFF \
+          -DQT_BUILD_QTMULTIMEDIA=OFF \
+          -DQT_BUILD_QTNETWORKAUTH=OFF \
+          -DQT_BUILD_QTQUICK3D=OFF \
+          -DQT_BUILD_QTQUICKWIDGETS=OFF \
+          -DQT_BUILD_QTSCXML=OFF \
+          -DQT_BUILD_QTSENSORS=OFF \
+          -DQT_BUILD_QTSTATEMACHINE=OFF \
+          -DQT_BUILD_QTSVG=OFF \
+          -DQT_BUILD_QTTOOLS=OFF \
+          -DQT_BUILD_QTWAYLAND=OFF \
+          -DQT_BUILD_QTWEBCHANNEL=OFF \
+          -DQT_BUILD_QTWEBENGINE=OFF \
+          -DQT_BUILD_QTWEBVIEW=OFF \
+          -DQT_BUILD_QTWEBSOCKETS=OFF
         cmake --build . # --target syncqt
         cmake --install .
       shell: bash 
