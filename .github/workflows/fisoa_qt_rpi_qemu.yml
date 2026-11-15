@@ -147,12 +147,12 @@ jobs:
           key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
-      # Install Qt host: needed as QT_HOST_PATH    --break-system-packages
+      # Install Qt host: needed as QT_HOST_PATH 
     - name: Install Qt host
       if: steps.qt-host-cache.outputs.cache-hit != 'true'
       run: |
           set -euo pipefail
-          pip3 install aqtinstall
+          pip3 install aqtinstall --break-system-packages
           aqt install-qt linux desktop ${QT_VERSION} gcc_64 -O ${QT_HOST_DIR}
       shell: bash
     # - name: Install host Qt via apt
