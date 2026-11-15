@@ -147,62 +147,77 @@ jobs:
           key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
-      # Install Qt host: needed as QT_HOST_PATH
-    # - name: Install Qt host
-    #   if: steps.qt-host-cache.outputs.cache-hit != 'true'
-    #   run: |
-    #       set -euo pipefail
-    #       pip3 install aqtinstall --break-system-packages
-    #       aqt install-qt linux desktop ${QT_VERSION} -O ${QT_HOST_DIR}
-    #   shell: bash
+      # Install Qt host: needed as QT_HOST_PATH    --break-system-packages
+    - name: Install Qt host
+      if: steps.qt-host-cache.outputs.cache-hit != 'true'
+      run: |
+          set -euo pipefail
+          pip3 install aqtinstall
+          aqt install-qt linux desktop ${QT_VERSION} gcc_64 -O ${QT_HOST_DIR}
+      shell: bash
     # - name: Install host Qt via apt
     #   run: |
     #       sudo apt-get update 
     #       sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
     #   shell: bash
-    - name: Build Qt host tools from source
-      run: |
-        set -euo pipefail
+    # - name: Build Qt host tools from source
+    #   run: |
+    #     set -euo pipefail
 
-        QT_MINOR="${QT_VERSION%.*}"
-        mkdir -p /opt/qt-src && cd /opt/qt-src
-        curl -fsSL \
-            "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
-            -o qt-src.tar.xz
-        tar xJf qt-src.tar.xz
-        cd qt-everywhere-src-${QT_VERSION}
-        mkdir -p build-host && cd build-host
-        cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
-          -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
-          -DINPUT_opengl=no \
-          -DQT_BUILD_EXAMPLES=OFF \
-          -DQT_BUILD_TOOLS=ON \
-          -DQT_BUILD_TESTS=OFF \
-          -DQT_BUILD_BENCHMARKS=OFF \
-          -DQT_BUILD_QT3D=OFF \
-          -DQT_BUILD_QTCHARTS=OFF \
-          -DQT_BUILD_QTCONNECTIVITY=OFF \
-          -DQT_BUILD_QTDATAVISUALIZATION=OFF \
-          -DQT_BUILD_QTDOC=OFF \
-          -DQT_BUILD_QTGRAPHICALVIEW=OFF \
-          -DQT_BUILD_QTLOCATION=OFF \
-          -DQT_BUILD_QTMULTIMEDIA=OFF \
-          -DQT_BUILD_QTNETWORKAUTH=OFF \
-          -DQT_BUILD_QTQUICK3D=OFF \
-          -DQT_BUILD_QTQUICKWIDGETS=OFF \
-          -DQT_BUILD_QTSCXML=OFF \
-          -DQT_BUILD_QTSENSORS=OFF \
-          -DQT_BUILD_QTSTATEMACHINE=OFF \
-          -DQT_BUILD_QTSVG=OFF \
-          -DQT_BUILD_QTTOOLS=OFF \
-          -DQT_BUILD_QTWAYLAND=OFF \
-          -DQT_BUILD_QTWEBCHANNEL=OFF \
-          -DQT_BUILD_QTWEBENGINE=OFF \
-          -DQT_BUILD_QTWEBVIEW=OFF \
-          -DQT_BUILD_QTWEBSOCKETS=OFF
-        cmake --build . # --target syncqt
-        cmake --install .
-      shell: bash 
+    #     QT_MINOR="${QT_VERSION%.*}"
+    #     mkdir -p /opt/qt-src && cd /opt/qt-src
+    #     curl -fsSL \
+    #         "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
+    #         -o qt-src.tar.xz
+    #     tar xJf qt-src.tar.xz
+    #     cd qt-everywhere-src-${QT_VERSION}
+    #     mkdir -p build-host && cd build-host
+    #     cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+    #       -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
+    #       -DINPUT_opengl=no \
+    #       -DQT_BUILD_EXAMPLES=OFF \
+    #       -DQT_BUILD_TOOLS=OFF \
+    #       -DQT_BUILD_TESTS=OFF \
+    #       -DQT_BUILD_BENCHMARKS=OFF \
+    #       -DQT_BUILD_QT3D=OFF \
+    #       -DQT_BUILD_QTCHARTS=OFF \
+    #       -DQT_BUILD_QTCONNECTIVITY=OFF \
+    #       -DQT_BUILD_QTDATAVISUALIZATION=OFF \
+    #       -DQT_BUILD_QTDOC=OFF \
+    #       -DQT_BUILD_QTGRAPHICALVIEW=OFF \
+    #       -DQT_BUILD_QTLOCATION=OFF \
+    #       -DQT_BUILD_QTMULTIMEDIA=OFF \
+    #       -DQT_BUILD_QTNETWORKAUTH=OFF \
+    #       -DQT_BUILD_QTQUICK3D=OFF \
+    #       -DQT_BUILD_QTQUICKWIDGETS=OFF \
+    #       -DQT_BUILD_QTSCXML=OFF \
+    #       -DQT_BUILD_QTSENSORS=OFF \
+    #       -DQT_BUILD_QTSTATEMACHINE=OFF \
+    #       -DQT_BUILD_QTSVG=OFF \
+    #       -DQT_BUILD_QTTOOLS=OFF \
+    #       -DQT_BUILD_QTWAYLAND=OFF \
+    #       -DQT_BUILD_QTWEBCHANNEL=OFF \
+    #       -DQT_BUILD_QTWEBENGINE=OFF \
+    #       -DQT_BUILD_QTWEBVIEW=OFF \
+    #       -DQT_BUILD_QTWEBSOCKETS=OFF \
+    #       -DQT_FEATURE_opengl=OFF \
+    #       -DQT_FEATURE_opengles2=OFF \
+    #       -DQT_FEATURE_egl=OFF \
+    #       -DQT_FEATURE_eglfs=OFF \
+    #       -DQT_FEATURE_xcb=OFF \
+    #       -DQT_FEATURE_xlib=OFF \
+    #       -DQT_FEATURE_cups=OFF \
+    #       -DQT_FEATURE_fontconfig=OFF \
+    #       -DQT_FEATURE_glib=OFF \
+    #       -DQT_FEATURE_dbus=OFF \
+    #       -DQT_FEATURE_gtk=OFF \
+    #       -DQT_FEATURE_icu=OFF \
+    #       -DQT_FEATURE_pcap=OFF \
+    #       -DQT_FEATURE_linuxfb=OFF \
+    #       -DQT_FEATURE_vnc=OFF
+    #     cmake --build . # --target syncqt
+    #     cmake --install .
+    #   shell: bash 
     
     # - name: Verify Qt6HostInfo
     #   run: |
@@ -221,12 +236,12 @@ jobs:
       run: |
           set -euo pipefail
 
-          # QT_MINOR="${QT_VERSION%.*}"
-          # mkdir -p /opt/qt-src && cd /opt/qt-src
-          # curl -fsSL \
-          #   "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/submodules/qtbase-everywhere-src-${QT_VERSION}.tar.xz" \
-          #   -o qt-src.tar.xz
-          # tar xJf qt-src.tar.xz
+          QT_MINOR="${QT_VERSION%.*}"
+          mkdir -p /opt/qt-src && cd /opt/qt-src
+          curl -fsSL \
+            "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
+            -o qt-src.tar.xz
+          tar xJf qt-src.tar.xz
           # Locate the actual file (handles lib/ vs lib64/ differences)
           # HOSTINFO_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6HostInfo" 2>/dev/null | head -1)
           # if [ -z "$HOSTINFO_DIR" ]; then
@@ -253,13 +268,13 @@ jobs:
           #   -DQt6WidgetsTools_DIR=${WIDGETSTOOLS_DIR} \
           #   -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
 
-          cd /opt/qt-src/qt-everywhere-src-${QT_VERSION}
+          cd qt-everywhere-src-${QT_VERSION}
 
           cmake -B build \
             -GNinja \
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64\
+            -DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
@@ -314,7 +329,7 @@ jobs:
           set -euo pipefail
           cmake -B build-aarch64 \
             -GNinja \
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=cmake/aarch64-toolchain.cmake \
             -DCMAKE_PREFIX_PATH=${QT_TARGET_DIR} \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
