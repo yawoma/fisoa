@@ -153,7 +153,8 @@ jobs:
       run: |
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
-          aqt install-qt linux desktop ${QT_VERSION} gcc_64 -O ${QT_HOST_DIR}
+          aqt list-qt linux desktop --arch 6.11.2
+          # aqt install-qt linux desktop ${QT_VERSION} gcc_64 -O ${QT_HOST_DIR}
       shell: bash
     # - name: Install host Qt via apt
     #   run: |
