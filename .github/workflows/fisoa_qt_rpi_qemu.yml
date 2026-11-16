@@ -148,23 +148,41 @@ jobs:
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
       # Install Qt host: needed as QT_HOST_PATH -m qtshadertools qttools qtdeclarative
+      # debug_info qt3d qt3d.debug_information qt5compat qt5compat.debug_information 
+      # qtcanvaspainter qtcanvaspainter.debug_information qtcharts qtcharts.debug_information 
+      # qtconnectivity qtconnectivity.debug_information qtdatavis3d qtdatavis3d.debug_information 
+      # qtgraphs qtgraphs.debug_information qtgrpc qtgrpc.debug_information qthttpserver 
+      # qthttpserver.debug_information qtimageformats qtimageformats.debug_information 
+      # qtlanguageserver qtlocation qtlocation.debug_information qtlottie qtlottie.debug_information 
+      # qtmultimedia qtmultimedia.debug_information qtnetworkauth qtnetworkauth.debug_information 
+      # qtopenapi qtopenapi.debug_information qtpdf qtpositioning qtpositioning.debug_information 
+      # qtquick3d qtquick3d.debug_information qtquick3dphysics qtquick3dphysics.debug_information 
+      # qtquickeffectmaker qtquickeffectmaker.debug_information qtquicktimeline 
+      # qtquicktimeline.debug_information qtremoteobjects qtremoteobjects.debug_information qtscxml 
+      # qtscxml.debug_information qtsensors qtsensors.debug_information qtserialbus 
+      # qtserialbus.debug_information qtserialport qtserialport.debug_information qtshadertools 
+      # qtshadertools.debug_information qtspeech qtspeech.debug_information qttasktree 
+      # qttasktree.debug_information qtvirtualkeyboard qtvirtualkeyboard.debug_information 
+      # qtwaylandcompositor qtwebchannel qtwebchannel.debug_information qtwebengine qtwebsockets 
+      # qtwebsockets.debug_information qtwebview qtwebview.debug_information
     - name: Install Qt host
       if: steps.qt-host-cache.outputs.cache-hit != 'true'
       run: |
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
           # aqt list-qt linux desktop --arch 6.11.2
-          aqt list-qt linux desktop --modules 6.11.2 linux_gcc_64
-          # aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -O ${QT_HOST_DIR}
-          # QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
-          # echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
-          # # Verify the critical package is present: Qt6HostInfo
-          # test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
-          #   || {\
-          #    echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
-          #    ls -la "${QT_HOST_PATH}/lib/cmake/"; \
-          #    exit 1; \
-          #    }
+          # aqt list-qt linux desktop --modules 6.11.2 linux_gcc_64
+          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 \
+              -m qtshadertools -O ${QT_HOST_DIR}
+          QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
+          echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
+          # Verify the critical package is present: Qt6HostInfo
+          test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
+            || {\
+             echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
+             ls -la "${QT_HOST_PATH}/lib/cmake/"; \
+             exit 1; \
+             }
       shell: bash
     # - name: Install host Qt via apt
     #   run: |
