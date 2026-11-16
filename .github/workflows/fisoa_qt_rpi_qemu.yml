@@ -155,6 +155,11 @@ jobs:
           pip3 install aqtinstall --break-system-packages
           # aqt list-qt linux desktop --arch 6.11.2
           aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -O ${QT_HOST_DIR}
+          QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/linux_gcc_64"
+          echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
+          # Verify the critical package is present
+          test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
+          || { echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; ls -la "${QT_HOST_PATH}/lib/cmake/"; exit 1; }
       shell: bash
     # - name: Install host Qt via apt
     #   run: |
@@ -275,7 +280,7 @@ jobs:
             -GNinja \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
-            -DQT_HOST_PATH=${QT_HOST_DIR}/Qt/${QT_VERSION}/gcc_64 \
+            -DQT_HOST_PATH=${QT_HOST_PATH} \
             -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
