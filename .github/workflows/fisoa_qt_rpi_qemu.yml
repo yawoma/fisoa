@@ -173,7 +173,7 @@ jobs:
           # aqt list-qt linux desktop --arch 6.11.2
           # aqt list-qt linux desktop --modules 6.11.2 linux_gcc_64
           aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 \
-              -m qtshadertools -O ${QT_HOST_DIR}
+              -m qtshadertools qtquick3d -O ${QT_HOST_DIR}
           QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
           echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
           # Verify the critical package is present: Qt6HostInfo
@@ -184,70 +184,7 @@ jobs:
              exit 1; \
              }
       shell: bash
-    # - name: Install host Qt via apt
-    #   run: |
-    #       sudo apt-get update 
-    #       sudo apt-get install -y qt6-base-dev qt6-base-dev-tools
-    #   shell: bash
-    # - name: Build Qt host tools from source
-    #   run: |
-    #     set -euo pipefail
 
-    #     QT_MINOR="${QT_VERSION%.*}"
-    #     mkdir -p /opt/qt-src && cd /opt/qt-src
-    #     curl -fsSL \
-    #         "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
-    #         -o qt-src.tar.xz
-    #     tar xJf qt-src.tar.xz
-    #     cd qt-everywhere-src-${QT_VERSION}
-    #     mkdir -p build-host && cd build-host
-    #     cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
-    #       -DCMAKE_INSTALL_PREFIX=${QT_HOST_DIR}/${QT_VERSION}/gcc_64 \
-    #       -DINPUT_opengl=no \
-    #       -DQT_BUILD_EXAMPLES=OFF \
-    #       -DQT_BUILD_TOOLS=OFF \
-    #       -DQT_BUILD_TESTS=OFF \
-    #       -DQT_BUILD_BENCHMARKS=OFF \
-    #       -DQT_BUILD_QT3D=OFF \
-    #       -DQT_BUILD_QTCHARTS=OFF \
-    #       -DQT_BUILD_QTCONNECTIVITY=OFF \
-    #       -DQT_BUILD_QTDATAVISUALIZATION=OFF \
-    #       -DQT_BUILD_QTDOC=OFF \
-    #       -DQT_BUILD_QTGRAPHICALVIEW=OFF \
-    #       -DQT_BUILD_QTLOCATION=OFF \
-    #       -DQT_BUILD_QTMULTIMEDIA=OFF \
-    #       -DQT_BUILD_QTNETWORKAUTH=OFF \
-    #       -DQT_BUILD_QTQUICK3D=OFF \
-    #       -DQT_BUILD_QTQUICKWIDGETS=OFF \
-    #       -DQT_BUILD_QTSCXML=OFF \
-    #       -DQT_BUILD_QTSENSORS=OFF \
-    #       -DQT_BUILD_QTSTATEMACHINE=OFF \
-    #       -DQT_BUILD_QTSVG=OFF \
-    #       -DQT_BUILD_QTTOOLS=OFF \
-    #       -DQT_BUILD_QTWAYLAND=OFF \
-    #       -DQT_BUILD_QTWEBCHANNEL=OFF \
-    #       -DQT_BUILD_QTWEBENGINE=OFF \
-    #       -DQT_BUILD_QTWEBVIEW=OFF \
-    #       -DQT_BUILD_QTWEBSOCKETS=OFF \
-    #       -DQT_FEATURE_opengl=OFF \
-    #       -DQT_FEATURE_opengles2=OFF \
-    #       -DQT_FEATURE_egl=OFF \
-    #       -DQT_FEATURE_eglfs=OFF \
-    #       -DQT_FEATURE_xcb=OFF \
-    #       -DQT_FEATURE_xlib=OFF \
-    #       -DQT_FEATURE_cups=OFF \
-    #       -DQT_FEATURE_fontconfig=OFF \
-    #       -DQT_FEATURE_glib=OFF \
-    #       -DQT_FEATURE_dbus=OFF \
-    #       -DQT_FEATURE_gtk=OFF \
-    #       -DQT_FEATURE_icu=OFF \
-    #       -DQT_FEATURE_pcap=OFF \
-    #       -DQT_FEATURE_linuxfb=OFF \
-    #       -DQT_FEATURE_vnc=OFF
-    #     cmake --build . # --target syncqt
-    #     cmake --install .
-    #   shell: bash 
-    
     # - name: Verify Qt6HostInfo
     #   run: |
     #     echo "--- Search for Qt6HostInfoConfig.cmake ---"
@@ -257,9 +194,7 @@ jobs:
     #     ls "${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib64/cmake/" 2>/dev/null
     #   shell: bash
 
-      # Build Qt 6 for aarch64 : Quick/QML only (-DQT_HOST_PATH=${QT_HOST_DIR}/${QT_VERSION}/gcc_64/ \)
-      # # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake lib/cmake/Qt6HostInfo\
-      # -DQT_HOST_PATH_CMAKE_DIR=/usr/lib/x86_64-linux-gnu/cmake \
+      # Build Qt 6 for aarch64 : Quick/QML only
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
       run: |
@@ -271,31 +206,6 @@ jobs:
             "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
             -o qt-src.tar.xz
           tar xJf qt-src.tar.xz
-          # Locate the actual file (handles lib/ vs lib64/ differences)
-          # HOSTINFO_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6HostInfo" 2>/dev/null | head -1)
-          # if [ -z "$HOSTINFO_DIR" ]; then
-          #   echo "FATAL: Qt6HostInfo directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
-          #   exit 1
-          # fi
-          # echo "Qt6HostInfo_DIR=$HOSTINFO_DIR"
-
-          # CORETOOLS_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6CoreTools" 2>/dev/null | head -1)
-          # if [ -z "$CORETOOLS_DIR" ]; then
-          #   echo "FATAL: Qt6CoreTools directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
-          #   exit 1
-          # fi
-          # echo "Qt6CoreTools_DIR=$CORETOOLS_DIR"
-
-          # WIDGETSTOOLS_DIR=$(find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -type d -name "Qt6WidgetsTools" 2>/dev/null | head -1)
-          # if [ -z "$CORETOOLS_DIR" ]; then
-          #   echo "FATAL: Qt6WidgetsTools directory not found under ${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
-          #   exit 1
-          # fi
-          # echo "Qt6WidgetsTools_DIR=$WIDGETSTOOLS_DIR"
-          # -DQt6HostInfo_DIR=${HOSTINFO_DIR} \
-          #   -DQt6CoreTools_DIR=${CORETOOLS_DIR} \
-          #   -DQt6WidgetsTools_DIR=${WIDGETSTOOLS_DIR} \
-          #   -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
 
           cd qt-everywhere-src-${QT_VERSION}
 
