@@ -240,7 +240,7 @@ jobs:
             -DQT_BUILD_QTWEBVIEW=OFF \
             -DQT_BUILD_QTWEBSOCKETS=OFF \
             -DQT_BUILD_QTGRPC=OFF \
-            -DQT_BUILD_QTPROTOBUF=OFF \
+            -DQT_BUILD_QTPROTOBUFGEN=OFF \
             -DQT_FEATURE_protobuf=OFF \
             -DQT_FEATURE_grpc=OFF \
             -DQT_FEATURE_shadertools=OFF \
