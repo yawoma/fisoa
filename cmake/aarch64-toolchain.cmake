@@ -26,7 +26,6 @@ if(EXISTS "/etc/debian_version")
     set(CMAKE_INCLUDE_PATH /usr/include/aarch64-linux-gnu)
     set(CMAKE_LIBRARY_PATH /usr/lib/aarch64-linux-gnu)
 endif()
-set(QT_HOST_PATH /usr)
 
 set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
@@ -44,6 +43,7 @@ if(EXISTS "/etc/fedora-release" OR EXISTS "/etc/redhat-release")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fno-link-libatomic \
                         -isystem ${SYSROOT_INC}")
     # set(CMAKE_FIND_ROOT_PATH /usr/aarch64-redhat-linux/sys-root/fc44 /opt/qt-aarch64)
+    set(QT_HOST_PATH /usr)
 endif()
 
 # --- Search path policies ---
