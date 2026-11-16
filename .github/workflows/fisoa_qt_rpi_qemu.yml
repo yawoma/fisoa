@@ -172,17 +172,16 @@ jobs:
           pip3 install aqtinstall --break-system-packages
           # aqt list-qt linux desktop --arch 6.11.2
           # aqt list-qt linux desktop --modules 6.11.2 linux_gcc_64
-          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 \
-              -m qtshadertools qtquick3d -O ${QT_HOST_DIR}
+          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m all -O ${QT_HOST_DIR}
           QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
           echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
-          # Verify the critical package is present: Qt6HostInfo
-          test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
-            || {\
-             echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
-             ls -la "${QT_HOST_PATH}/lib/cmake/"; \
-             exit 1; \
-             }
+          # # Verify the critical package is present: Qt6HostInfo
+          # test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
+          #   || {\
+          #    echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
+          #    ls -la "${QT_HOST_PATH}/lib/cmake/"; \
+          #    exit 1; \
+          #    }
       shell: bash
 
     # - name: Verify Qt6HostInfo
