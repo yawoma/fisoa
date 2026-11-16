@@ -274,6 +274,7 @@ jobs:
           #   -DQt6WidgetsTools_DIR=${WIDGETSTOOLS_DIR} \
           #   -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
 
+          echo "QT_HOST_PATH='${QT_HOST_PATH}'"
           cd qt-everywhere-src-${QT_VERSION}
 
           cmake -B build \
