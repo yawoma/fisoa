@@ -154,12 +154,17 @@ jobs:
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
           # aqt list-qt linux desktop --arch 6.11.2
-          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -O ${QT_HOST_DIR}
+          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 \
+                  -m qttools qtdeclarative -O ${QT_HOST_DIR}
           QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
           echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
-          # Verify the critical package is present
+          # Verify the critical package is present: Qt6HostInfo
           test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
-          || { echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; ls -la "${QT_HOST_PATH}/lib/cmake/"; exit 1; }
+            || {\
+             echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
+             ls -la "${QT_HOST_PATH}/lib/cmake/"; \
+             exit 1; \
+             }
       shell: bash
     # - name: Install host Qt via apt
     #   run: |
@@ -274,7 +279,6 @@ jobs:
           #   -DQt6WidgetsTools_DIR=${WIDGETSTOOLS_DIR} \
           #   -DQT_NO_PACKAGE_VERSION_CHECK=TRUE \
 
-          echo "QT_HOST_PATH='${QT_HOST_PATH}'"
           cd qt-everywhere-src-${QT_VERSION}
 
           cmake -B build \
@@ -308,6 +312,7 @@ jobs:
             -DQT_BUILD_QTWEBENGINE=OFF \
             -DQT_BUILD_QTWEBVIEW=OFF \
             -DQT_BUILD_QTWEBSOCKETS=OFF \
+            -DQT_FEATURE_shadertools=OFF \
             -DQT_FEATURE_opengl=OFF \
             -DQT_FEATURE_opengles2=OFF \
             -DQT_FEATURE_egl=OFF \
