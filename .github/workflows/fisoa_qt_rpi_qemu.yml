@@ -213,7 +213,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_PATH} \
-            -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
+            -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \            
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
             -DQT_BUILD_BENCHMARKS=OFF \
@@ -239,6 +239,8 @@ jobs:
             -DQT_BUILD_QTWEBENGINE=OFF \
             -DQT_BUILD_QTWEBVIEW=OFF \
             -DQT_BUILD_QTWEBSOCKETS=OFF \
+            -DQT_FEATURE_protobuf=OFF \
+            -DQT_FEATURE_grpc=OFF \
             -DQT_FEATURE_shadertools=OFF \
             -DQT_FEATURE_opengl=OFF \
             -DQT_FEATURE_opengles2=OFF \
