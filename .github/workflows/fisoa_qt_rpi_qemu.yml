@@ -236,11 +236,10 @@ jobs:
             -DQT_BUILD_QTTOOLS=OFF \
             -DQT_BUILD_QTWAYLAND=OFF \
             -DQT_BUILD_QTWEBCHANNEL=OFF \
-            -DQT_BUILD_QTWEBENGINE=OFF \
+            -DBUILD_qtwebengine=OFF \
             -DQT_BUILD_QTWEBVIEW=OFF \
             -DQT_BUILD_QTWEBSOCKETS=OFF \
-            -DQT_BUILD_QTGRPC=OFF \
-            -DQT_BUILD_QTPROTOBUFGEN=OFF \
+            -DBUILD_qtgrpc=OFF \
             -DQT_FEATURE_protobuf=OFF \
             -DQT_FEATURE_grpc=OFF \
             -DQT_FEATURE_shadertools=OFF \
