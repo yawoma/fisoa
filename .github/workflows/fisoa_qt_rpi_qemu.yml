@@ -350,7 +350,7 @@ jobs:
         shell: bash
         run: |
             jq -r '.[].file' build-aarch64/compile_commands.json \
-            | grep -v '/build-aarch64/ \
+            | grep -v '/build-aarch64/' \
             | while read -r file; do
               if [ ! -f "$file" ]; then
                 echo "Missing file: $file"
@@ -371,8 +371,6 @@ jobs:
 
     # Github runner. this will run on
     runs-on: ubuntu-24.04
-    # env:
-    #   CLANG_HOME: /usr/bin/llvm-20
 
     steps:
     - name: Checkout repository
