@@ -365,9 +365,7 @@ jobs:
               fi
             done
 
-      # Run clang tidy # -header-filter=.* 'src/*.cc' | grep -v '_autogen'
-      # --extra-arg=--target=${CROSS_TRIPLET} \
-      #       --extra-arg=--sysroot=${SYSROOT} \
+      # Run clang tidy # 'src/*.cc'
       - name: Run clang-tidy
         shell: bash
         run: |
