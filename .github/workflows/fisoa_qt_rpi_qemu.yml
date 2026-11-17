@@ -148,8 +148,9 @@ jobs:
       run: |
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
-          # # Base only: includes qtbase, qtdeclarative, qtshadertools host tools
-          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -O ${QT_HOST_DIR}
+          # # Base only: includes qtbase, qtdeclarative host tools
+          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m qtshadertools \
+              -O ${QT_HOST_DIR}
       shell: bash
     
     - name: Export Qt Host Path
