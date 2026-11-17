@@ -185,22 +185,22 @@ jobs:
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
             -DQT_BUILD_BENCHMARKS=OFF \
-            -DQT_FEATURE_opengl=OFF \
-            -DQT_FEATURE_opengles2=OFF \
-            -DQT_FEATURE_egl=OFF \
-            -DQT_FEATURE_eglfs=OFF \
-            -DQT_FEATURE_xcb=OFF \
-            -DQT_FEATURE_xlib=OFF \
-            -DQT_FEATURE_cups=OFF \
-            -DQT_FEATURE_fontconfig=OFF \
-            -DQT_FEATURE_glib=OFF \
-            -DQT_FEATURE_dbus=OFF \
-            -DQT_FEATURE_gtk3=OFF \
-            -DQT_FEATURE_icu=OFF \
-            -DQT_FEATURE_pcap=OFF \
-            -DQT_FEATURE_linuxfb=ON \
-            -DQT_FEATURE_vnc=OFF \
-            -DQT_FEATURE_reduce_exports=ON
+            -DINPUT_opengl=no \
+            -DFEATURE_opengles2=OFF \
+            -DFEATURE_egl=OFF \
+            -DFEATURE_eglfs=OFF \
+            -DFEATURE_xcb=OFF \
+            -DFEATURE_xlib=OFF \
+            -DFEATURE_cups=OFF \
+            -DFEATURE_fontconfig=OFF \
+            -DFEATURE_glib=OFF \
+            -DFEATURE_dbus=OFF \
+            -DFEATURE_gtk3=OFF \
+            -DFEATURE_icu=OFF \
+            -DFEATURE_pcap=OFF \
+            -DFEATURE_linuxfb=ON \
+            -DFEATURE_vnc=OFF \
+            -DFEATURE_reduce_exports=ON
 
           cmake --build build --parallel $(nproc)
           cmake --install build
