@@ -103,11 +103,6 @@ jobs:
       shell: bash 
 
     # Install of dependencies. TODO: To be reviewed (-y --no-install-recommends)
-    # for i in {1..5}; do
-    #        sudo apt-get update && break
-    #        echo "apt-get update failed, retrying ($i/5)..."
-    #        sleep $((i * 5))
-    #     done
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -147,51 +142,23 @@ jobs:
           key: qt-${{ env.QT_VERSION }}-x86_64-host-ubuntu2404
           restore-keys: qt-${{ env.QT_VERSION }}-x86_64-
     
-      # Install Qt host: needed as QT_HOST_PATH -m qtshadertools qttools qtdeclarative
-      # debug_info qt3d qt3d.debug_information qt5compat qt5compat.debug_information 
-      # qtcanvaspainter qtcanvaspainter.debug_information qtcharts qtcharts.debug_information 
-      # qtconnectivity qtconnectivity.debug_information qtdatavis3d qtdatavis3d.debug_information 
-      # qtgraphs qtgraphs.debug_information qtgrpc qtgrpc.debug_information qthttpserver 
-      # qthttpserver.debug_information qtimageformats qtimageformats.debug_information 
-      # qtlanguageserver qtlocation qtlocation.debug_information qtlottie qtlottie.debug_information 
-      # qtmultimedia qtmultimedia.debug_information qtnetworkauth qtnetworkauth.debug_information 
-      # qtopenapi qtopenapi.debug_information qtpdf qtpositioning qtpositioning.debug_information 
-      # qtquick3d qtquick3d.debug_information qtquick3dphysics qtquick3dphysics.debug_information 
-      # qtquickeffectmaker qtquickeffectmaker.debug_information qtquicktimeline 
-      # qtquicktimeline.debug_information qtremoteobjects qtremoteobjects.debug_information qtscxml 
-      # qtscxml.debug_information qtsensors qtsensors.debug_information qtserialbus 
-      # qtserialbus.debug_information qtserialport qtserialport.debug_information qtshadertools 
-      # qtshadertools.debug_information qtspeech qtspeech.debug_information qttasktree 
-      # qttasktree.debug_information qtvirtualkeyboard qtvirtualkeyboard.debug_information 
-      # qtwaylandcompositor qtwebchannel qtwebchannel.debug_information qtwebengine qtwebsockets 
-      # qtwebsockets.debug_information qtwebview qtwebview.debug_information
+      # Install Qt host: needed as QT_HOST_PATH
     - name: Install Qt host
       if: steps.qt-host-cache.outputs.cache-hit != 'true'
       run: |
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
-          # aqt list-qt linux desktop --arch 6.11.2
-          # aqt list-qt linux desktop --modules 6.11.2 linux_gcc_64
-          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m all -O ${QT_HOST_DIR}
-          QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
-          echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
-          # # Verify the critical package is present: Qt6HostInfo
-          # test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
-          #   || {\
-          #    echo "::error:: Qt6HostInfoConfig.cmake not found under ${QT_HOST_PATH}"; \
-          #    ls -la "${QT_HOST_PATH}/lib/cmake/"; \
-          #    exit 1; \
-          #    }
+          # # Base only: includes qtbase, qtdeclarative, qtshadertools host tools
+          aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -O ${QT_HOST_DIR}
       shell: bash
-
-    # - name: Verify Qt6HostInfo
-    #   run: |
-    #     echo "--- Search for Qt6HostInfoConfig.cmake ---"
-    #     find "${QT_HOST_DIR}/${QT_VERSION}/gcc_64" -name "Qt6HostInfoConfig.cmake" 2>/dev/null
-    #     echo "--- lib/cmake contents ---"
-    #     ls "${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib/cmake/" 2>/dev/null || \
-    #     ls "${QT_HOST_DIR}/${QT_VERSION}/gcc_64/lib64/cmake/" 2>/dev/null
-    #   shell: bash
+    
+    - name: Export Qt Host Path
+      run: |
+          QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
+          test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
+            || { echo "::error::Qt6HostInfoConfig.cmake not found in ${QT_HOST_PATH}"; exit 1; }
+          echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
+      shell: bash
 
       # Build Qt 6 for aarch64 : Quick/QML only
     - name: Build Qt for aarch64
@@ -205,44 +172,18 @@ jobs:
             "https://download.qt.io/official_releases/qt/${QT_MINOR}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz" \
             -o qt-src.tar.xz
           tar xJf qt-src.tar.xz
-
           cd qt-everywhere-src-${QT_VERSION}
+          rm -rf build
 
-          cmake -B build \
-            -GNinja \
+          cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/cmake/aarch64-toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_PATH} \
-            -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \            
+            -DCMAKE_INSTALL_PREFIX=${QT_TARGET_DIR} \
+            -DQT_BUILD_SUBMODULES="qtbase;qtshadertools;qtdeclarative;qtlanguageserver;qtsvg" \
             -DQT_BUILD_EXAMPLES=OFF \
             -DQT_BUILD_TESTS=OFF \
             -DQT_BUILD_BENCHMARKS=OFF \
-            -DQT_BUILD_TOOLS=OFF \
-            -DQT_BUILD_QT3D=OFF \
-            -DQT_BUILD_QTCHARTS=OFF \
-            -DQT_BUILD_QTCONNECTIVITY=OFF \
-            -DQT_BUILD_QTDATAVISUALIZATION=OFF \
-            -DQT_BUILD_QTDOC=OFF \
-            -DQT_BUILD_QTGRAPHICALVIEW=OFF \
-            -DQT_BUILD_QTLOCATION=OFF \
-            -DQT_BUILD_QTMULTIMEDIA=OFF \
-            -DQT_BUILD_QTNETWORKAUTH=OFF \
-            -DQT_BUILD_QTQUICK3D=OFF \
-            -DQT_BUILD_QTQUICKWIDGETS=OFF \
-            -DQT_BUILD_QTSCXML=OFF \
-            -DQT_BUILD_QTSENSORS=OFF \
-            -DQT_BUILD_QTSTATEMACHINE=OFF \
-            -DQT_BUILD_QTSVG=OFF \
-            -DQT_BUILD_QTTOOLS=OFF \
-            -DQT_BUILD_QTWAYLAND=OFF \
-            -DQT_BUILD_QTWEBCHANNEL=OFF \
-            -DBUILD_qtwebengine=OFF \
-            -DQT_BUILD_QTWEBVIEW=OFF \
-            -DQT_BUILD_QTWEBSOCKETS=OFF \
-            -DBUILD_qtgrpc=OFF \
-            -DQT_FEATURE_protobuf=OFF \
-            -DQT_FEATURE_grpc=OFF \
-            -DQT_FEATURE_shadertools=OFF \
             -DQT_FEATURE_opengl=OFF \
             -DQT_FEATURE_opengles2=OFF \
             -DQT_FEATURE_egl=OFF \
@@ -253,15 +194,15 @@ jobs:
             -DQT_FEATURE_fontconfig=OFF \
             -DQT_FEATURE_glib=OFF \
             -DQT_FEATURE_dbus=OFF \
-            -DQT_FEATURE_gtk=OFF \
+            -DQT_FEATURE_gtk3=OFF \
             -DQT_FEATURE_icu=OFF \
             -DQT_FEATURE_pcap=OFF \
-            -DQT_FEATURE_linuxfb=OFF \
+            -DQT_FEATURE_linuxfb=ON \
             -DQT_FEATURE_vnc=OFF \
             -DQT_FEATURE_reduce_exports=ON
 
-          ninja -C build -j$(nproc)
-          ninja -C build install
+          cmake --build build --parallel $(nproc)
+          cmake --install build
           echo "✓ Qt aarch64 (Quick) installed to ${QT_TARGET_DIR}"
       shell: bash
 
