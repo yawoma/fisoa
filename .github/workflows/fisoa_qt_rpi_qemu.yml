@@ -344,7 +344,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: clang-tidy-inputs
-          path: .           # restores build-aarch64/... at the same relative path
+          path: build-aarch64
       
       - name: Verify inputs paths
         shell: bash
