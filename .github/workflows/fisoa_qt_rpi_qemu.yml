@@ -48,7 +48,7 @@ jobs:
 
     # Github runner this will run on TODO: To be reviewed for latest release
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 50
 
     steps:
     - name: Checkout repository
@@ -176,7 +176,6 @@ jobs:
             -o qt-src.tar.xz
           tar xJf qt-src.tar.xz
           cd qt-everywhere-src-${QT_VERSION}
-          rm -rf build
 
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -210,6 +209,7 @@ jobs:
 
       # Cross-compile the app (QML app)
     - name: Build application
+      shell: bash
       run: |
           set -euo pipefail
           cmake -B build-aarch64 \
@@ -221,10 +221,10 @@ jobs:
             -DBUILD_TESTS=ON
           cmake --build build-aarch64 --parallel $(nproc)
           echo "✓ Built: $(file build-aarch64/app)"
-      shell: bash
     
       # Run smoke test under QEMU user mode
     - name: Run smoke test under QEMU
+      shell: bash
       run: |
           set -euo pipefail
           echo "--- Verify QEMU target ---"
@@ -246,15 +246,17 @@ jobs:
           qemu-aarch64 -L ${SYSROOT} ./build-aarch64/app_utests
 
           echo "--- All tests passed ---"
-      shell: bash
     
     # Execute the tests.
-    - name: Test
-      run: ctest --test-dir build-aarch64 --output-on-failure
+    - name: Run Unit Tests
+      shell: bash
+      run: |
+          ctest --test-dir build-aarch64 --output-on-failure
     
       # Debug with gdb-multiarch
     - name: Debug with gdb-multiarch
       if: false  # set to false because this is optional (will be set to true to enable)
+      shell: bash
       run: |
           set -euo pipefail
           qemu-aarch64 -L ${SYSROOT} -g 1234 \
@@ -271,7 +273,6 @@ jobs:
             ./build-aarch64/app
 
           kill $QEMU_PID 2>/dev/null || true
-      shell: bash
 
     # Upload artifacts
     - name: Upload binary
@@ -284,12 +285,12 @@ jobs:
 
     - name: Upload QML dump (on failure)
       if: failure()
+      shell: bash
       run: |
           timeout 5 qemu-aarch64 -L ${SYSROOT} \
             ./build-aarch64/app -platform offscreen \
             -qmljsdebugger=port:3456,block \
             2>&1 | tee qml-debug.log || true
-      shell: bash
 
     - name: Upload QML debug log
       if: failure()
@@ -319,6 +320,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Install clang-tidy 20
+        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get purge --auto-remove llvm python3-lldb-14 llvm-14 -y
@@ -326,12 +328,11 @@ jobs:
           chmod +x llvm.sh
           sudo ./llvm.sh 20
           sudo apt-get install -y clang-tidy-20
-        shell: bash
       
-      - name: Clang-tidy version
+      - name: Check Clang-tidy Version
+        shell: bash
         run: |
           clang-tidy-20 --version
-        shell: bash
       
       - name: Download Compilation Database
         uses: actions/download-artifact@v4
@@ -340,6 +341,7 @@ jobs:
           path: build-aarch64
       
       - name: Verify compile_commands.json paths
+        shell: bash
         run: |
             cat build-aarch64/compile_commands.json | jq -r '.[].file' | while read file; do
               if [ ! -f "$file" ]; then
@@ -347,14 +349,13 @@ jobs:
                 exit 1
               fi
             done
-        shell: bash
 
       # Run clang tidy # -header-filter=.*
       - name: Run clang-tidy
-        run: |
-          clang-tidy-20 -format-style=file -p build-aarch64 src/**/*.cpp
         shell: bash
-          
+        run: |
+          clang-tidy-20 -format-style=file -p build-aarch64 src/**/*.cpp          
+
 
   check_formatting:
     name: Clang-format
@@ -380,12 +381,12 @@ jobs:
 
     - name: Install clang-format 20
       if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y clang-format-20
         export CLANG_HOME="/usr/lib/llvm-20"
         echo "CLANG_HOME=$CLANG_HOME" >> $GITHUB_ENV
-      shell: bash
     
     - name: Clang-format version
       run: |
@@ -393,14 +394,14 @@ jobs:
 
     # Run clang-format
     - name: Run clang-format
+      shell: bash
       run: |
         clang-format-20 -style=file include/**/*.h src/**/*.cpp tests/**/*.cpp
-      shell: bash
     
     - name: Check for unformatted files
+      shell: bash
       run: |
         git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
-      shell: bash
   
   tests_cppcheck:
     name: Cppcheck
