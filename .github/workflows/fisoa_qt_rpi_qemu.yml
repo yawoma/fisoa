@@ -48,7 +48,7 @@ jobs:
 
     # Github runner this will run on TODO: To be reviewed for latest release
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    timeout-minutes: 45
 
     steps:
     - name: Checkout repository
@@ -212,8 +212,7 @@ jobs:
       shell: bash
       run: |
           set -euo pipefail
-          cmake -B build-aarch64 \
-            -GNinja \
+          cmake -B build-aarch64 -G Ninja \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=cmake/aarch64-toolchain.cmake \
             -DCMAKE_PREFIX_PATH=${QT_TARGET_DIR} \
@@ -301,11 +300,17 @@ jobs:
           path: qml-debug.log
           if-no-files-found: ignore
     
-    - name: Upload compile_commands.json
+    - name: Upload clang-tidy inputs
       uses: actions/upload-artifact@v4
       with:
-        name: compile_commands
-        path: build-aarch64/compile_commands.json
+        name: clang-tidy-inputs
+        path: |
+            build-aarch64/compile_commands.json
+            build-aarch64/**/*_autogen/**
+            build-aarch64/**/*.h
+            build-aarch64/**/qrc_*.cpp
+        include-hidden-files: true
+        retention-days: 1
   
   check_tidy:
     name: Clang-tidy
@@ -335,16 +340,18 @@ jobs:
         run: |
           clang-tidy-20 --version
       
-      - name: Download Compilation Database
+      - name: Download Compilation paths
         uses: actions/download-artifact@v4
         with:
-          name: compile_commands
-          path: build-aarch64
+          name: clang-tidy-inputs
+          path: .           # restores build-aarch64/... at the same relative path
       
-      - name: Verify compile_commands.json paths
+      - name: Verify inputs paths
         shell: bash
         run: |
-            cat build-aarch64/compile_commands.json | jq -r '.[].file' | while read file; do
+            jq -r '.[].file' build-aarch64/compile_commands.json \
+            | grep -v '/build-aarch64/ \
+            | while read -r file; do
               if [ ! -f "$file" ]; then
                 echo "Missing file: $file"
                 exit 1
@@ -355,7 +362,8 @@ jobs:
       - name: Run clang-tidy
         shell: bash
         run: |
-          clang-tidy-20 -format-style=file -p build-aarch64 src/**/*.cpp          
+          clang-tidy-20 -format-style=file -p build-aarch64 -quiet \ 
+                        'fisoa/(src|include)/.*\.(cpp|cc)$'
 
 
   check_formatting:
@@ -411,7 +419,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       # Run Cppcheck using deep5050
       - name: Run cppcheck
