@@ -362,8 +362,8 @@ jobs:
       - name: Run clang-tidy
         shell: bash
         run: |
-          clang-tidy-20 -format-style=file -p build-aarch64 -quiet \ 
-                        'fisoa/(src|include)/.*\.(cpp|cc)$'
+            clang-tidy-20 -format-style=file -p build-aarch64 -quiet \
+            'fisoa/(src|include)/.*\.(cpp|cc)$'
 
 
   check_formatting:
