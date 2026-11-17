@@ -228,7 +228,8 @@ jobs:
       run: |
           set -euo pipefail
           echo "--- Verify QEMU target ---"
-          qemu-aarch64 -L ${SYSROOT} uname -m
+          qemu-aarch64 -L "${SYSROOT}" \
+                          "${SYSROOT}/lib/ld-linux-aarch64.so.1" --version
 
           echo "--- Running app (offscreen, 10s timeout) ---"
           timeout 10 qemu-aarch64 -L ${SYSROOT} \
