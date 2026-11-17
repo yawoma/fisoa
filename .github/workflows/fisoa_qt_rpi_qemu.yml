@@ -57,6 +57,7 @@ jobs:
         submodules: true
 
     - name: Setup arm64 cross-compile
+      shell: bash
       run: |
         sudo dpkg --add-architecture arm64
         CODENAME=$(lsb_release -cs)
@@ -68,9 +69,9 @@ jobs:
         Architectures: arm64
         Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
         EOF
-      shell: bash
     
     - name: Fix all apt sources
+      shell: bash 
       run: |
         CODENAME=$(lsb_release -cs)
         # Override DNS as a safety net
@@ -100,31 +101,22 @@ jobs:
         sudo rm -f /etc/apt/sources.list /etc/apt/apt-mirrors.txt
 
         sudo apt-get update
-      shell: bash 
 
-    # Install of dependencies. TODO: To be reviewed (-y --no-install-recommends)
+    # Install of dependencies. TODO: To be reviewed
     - name: Install Dependencies
+      shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          libx11-dev \
-          libxcursor-dev \
-          libxi-dev \
-          libxinerama-dev \
-          libxrandr-dev \
-          uuid-dev:arm64 \
-          cmake \
-          gcc-${CROSS_TRIPLET} \
-          g++-${CROSS_TRIPLET} \
-          gdb-multiarch \
-          qemu-user \
-          pkg-config \
-          xz-utils \
-          curl \
-          python3-pip \
-          ninja-build
-      shell: bash
+        sudo apt-get install -y --no-install-recommends\
+          build-essential libx11-dev libxcursor-dev libxi-dev \
+          libxinerama-dev libxrandr-dev \
+          libegl1 libgl1 libopengl0 libglx0 libxkbcommon0 \
+          libfontconfig1 libdbus-1-3 \
+          uuid-dev:arm64 cmake \
+          gcc-${CROSS_TRIPLET} g++-${CROSS_TRIPLET} \
+          gdb-multiarch qemu-user \
+          pkg-config xz-utils \
+          curl python3-pip ninja-build
 
       # Cache the Qt builds
     - name: Cache Qt target (aarch64)
@@ -145,25 +137,35 @@ jobs:
       # Install Qt host: needed as QT_HOST_PATH
     - name: Install Qt host
       if: steps.qt-host-cache.outputs.cache-hit != 'true'
+      shell: bash
       run: |
           set -euo pipefail
           pip3 install aqtinstall --break-system-packages
           # # Base only: includes qtbase, qtdeclarative host tools
           aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m qtshadertools \
               -O ${QT_HOST_DIR}
-      shell: bash
     
     - name: Export Qt Host Path
+      shell: bash
       run: |
           QT_HOST_PATH="${QT_HOST_DIR}/${QT_VERSION}/gcc_64"
           test -f "${QT_HOST_PATH}/lib/cmake/Qt6HostInfo/Qt6HostInfoConfig.cmake" \
             || { echo "::error::Qt6HostInfoConfig.cmake not found in ${QT_HOST_PATH}"; exit 1; }
           echo "QT_HOST_PATH=${QT_HOST_PATH}" >> "$GITHUB_ENV"
+    
+    - name: Sanity check host Qt tools
       shell: bash
+      run: |
+          for t in qsb moc rcc qmlcachegen; do
+              f=$(find "${QT_HOST_PATH}" -type f -name "$t" -perm -u+x | head -n1)
+              echo "== $t: $f"
+              ldd "$f" | grep "not found" && exit 1 || true
+          done
 
       # Build Qt 6 for aarch64 : Quick/QML only
     - name: Build Qt for aarch64
       if: steps.qt-target-cache.outputs.cache-hit != 'true'
+      shell: bash
       run: |
           set -euo pipefail
 
@@ -205,7 +207,6 @@ jobs:
           cmake --build build --parallel $(nproc)
           cmake --install build
           echo "✓ Qt aarch64 (Quick) installed to ${QT_TARGET_DIR}"
-      shell: bash
 
       # Cross-compile the app (QML app)
     - name: Build application
