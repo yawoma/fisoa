@@ -362,8 +362,19 @@ jobs:
       - name: Run clang-tidy
         shell: bash
         run: |
-            clang-tidy-20 -format-style=file -p build-aarch64 -quiet \
-            'fisoa/(src|include)/.*\.(cpp|cc)$'
+            set -euo pipefail
+            mapfile -t FILES < <(
+            git ls-files 'src/*.cpp' 'src/*.cc' \
+            | grep -v '_autogen'
+            )
+            printf 'Files to analyse: %d\n' "${#FILES[@]}"
+            [ "${#FILES[@]}" -gt 0 ] || { echo "::error::No source files found"; exit 1; }
+             
+            clang-tidy-20 -format-style=file -p build-aarch64 \
+            --header-filter='^'"${GITHUB_WORKSPACE}"'/(src|include)/' \
+            --extra-arg=--target=${CROSS_TRIPLET} \
+            --extra-arg=--sysroot=${SYSROOT} \
+            "${FILES[@]}"
 
 
   check_formatting:
