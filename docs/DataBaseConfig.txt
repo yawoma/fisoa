@@ -38,7 +38,7 @@ Table 4 : Flight
     • Depature date 
     • Arrival date 
     • Ecomonic Place Fee
-    • Busyness Place Fee
+    • Business Place Fee
     • Currency
 
 Table 5 : Booking

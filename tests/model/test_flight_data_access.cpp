@@ -58,7 +58,7 @@ TEST_F(FlightDataAccessTest, insert_and_get_flight)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     int flight_id = fdao->insert_flight(flight, company.name);
     EXPECT_GT(flight_id, 0);
@@ -75,7 +75,7 @@ TEST_F(FlightDataAccessTest, insert_and_get_flight)
     EXPECT_EQ(result->departureDate, "2026-10-09 13:30:00");
     EXPECT_EQ(result->arrivalDate, "2026-10-10 20:15:00");
     EXPECT_EQ(result->economicFee, 2000.80);
-    EXPECT_EQ(result->busynessFee, 2500.67);
+    EXPECT_EQ(result->businessFee, 2500.67);
     EXPECT_EQ(result->currency, "euros");
 }
 
@@ -105,7 +105,7 @@ TEST_F(FlightDataAccessTest, unique_uuid)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     int flight_id = fdao->insert_flight(flight, company.name);
     ASSERT_GT(flight_id, 0);
@@ -119,7 +119,7 @@ TEST_F(FlightDataAccessTest, unique_uuid)
         .departureDate = "2026-10-16 09:00:00",
         .arrivalDate   = "2026-10-17 15:30:50",
         .economicFee   = 1500.65,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2900.99,    // NOLINT
+        .businessFee   = 2900.99,    // NOLINT
         .currency      = "euros"};
     // Faile to insert
     EXPECT_EQ(fdao->insert_flight(flight_second, company.name), 0);
@@ -145,7 +145,7 @@ TEST_F(FlightDataAccessTest, update_flight)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     int flight_id = fdao->insert_flight(flight, company.name);
     EXPECT_GT(flight_id, 0);
@@ -154,14 +154,14 @@ TEST_F(FlightDataAccessTest, update_flight)
     result->departureDate = "2026-10-16 20:30:30";
     result->arrivalDate   = "2026-10-17 10:45:35";
     result->economicFee   = 1900.55;    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-    result->busynessFee   = 2400.89;    // NOLINT
+    result->businessFee   = 2400.89;    // NOLINT
     EXPECT_GT(fdao->update_flight(*result), 0);
     // check
     auto result_second = fdao->get_flight(result->uuid);
     EXPECT_EQ(result_second->departureDate, "2026-10-16 20:30:30");
     EXPECT_EQ(result_second->arrivalDate, "2026-10-17 10:45:35");
     EXPECT_EQ(result_second->economicFee, 1900.55);
-    EXPECT_EQ(result_second->busynessFee, 2400.89);
+    EXPECT_EQ(result_second->businessFee, 2400.89);
     EXPECT_EQ(result_second->companyId, company_id);
     EXPECT_EQ(result_second->codeIcao, "ABB");
 }
@@ -177,7 +177,7 @@ TEST_F(FlightDataAccessTest, update_non_existing_flight)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     // failed: result will be null
     EXPECT_EQ(fdao->update_flight(flight), 0);
@@ -203,7 +203,7 @@ TEST_F(FlightDataAccessTest, delete_flight)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     int flight_id = fdao->insert_flight(flight, company.name);
     // delete flight
@@ -237,7 +237,7 @@ TEST_F(FlightDataAccessTest, list_flights)
         .departureDate = "2026-10-09 13:30:00",
         .arrivalDate   = "2026-10-10 20:15:00",
         .economicFee   = 2000.80,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2500.67,    // NOLINT
+        .businessFee   = 2500.67,    // NOLINT
         .currency      = "euros"};
     ASSERT_GT(fdao->insert_flight(flight, company.name), 0);
 
@@ -250,7 +250,7 @@ TEST_F(FlightDataAccessTest, list_flights)
         .departureDate = "2026-10-16 09:00:00",
         .arrivalDate   = "2026-10-17 15:30:50",
         .economicFee   = 1500.65,    // NOLINT (cppcoreguidelines-avoid-magic-numbers)
-        .busynessFee   = 2900.99,    // NOLINT
+        .businessFee   = 2900.99,    // NOLINT
         .currency      = "euros"};
     ASSERT_GT(fdao->insert_flight(flight_second, company.name), 0);
 

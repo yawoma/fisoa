@@ -18,7 +18,7 @@ int FlightDataAccess::insert_flight(const Flight& flight, const std::string& com
         m_db,
         "INSERT INTO Flights "
         "(companyId, uuid, codeIcao, flightNumber, departureTown, arrivalTown, "
-        "departureDate, arrivalDate, economicPlaceFee, busynessPlaceFee, currency)"
+        "departureDate, arrivalDate, economicPlaceFee, businessPlaceFee, currency)"
         "VALUES ((SELECT company.id FROM Companies company WHERE company.name = ?), ?, "
         "(SELECT company.codeIcao FROM Companies company WHERE company.name = ?), ?, ?, "
         "?, ?, ?, ?, ?, ?)");
@@ -41,7 +41,7 @@ int FlightDataAccess::insert_flight(const Flight& flight, const std::string& com
     const int ECO_VAL = 9;
     query.bind(ECO_VAL, flight.economicFee);
     const int BUSY_VAL = 10;
-    query.bind(BUSY_VAL, flight.busynessFee);
+    query.bind(BUSY_VAL, flight.businessFee);
     const int CURRENCY_VAL = 11;
     query.bind(CURRENCY_VAL, flight.currency);
     int result = 0;
@@ -68,7 +68,7 @@ int FlightDataAccess::update_flight(const Flight& flight)
         m_db, "UPDATE Flights SET flightNumber = ?, "
               "departureTown = ?, arrivalTown = ?, "
               "departureDate = ?, arrivalDate = ?, "
-              "economicPlaceFee = ?, busynessPlaceFee = ?, "
+              "economicPlaceFee = ?, businessPlaceFee = ?, "
               "currency = ? WHERE uuid = ?");
     const int NUMBER_VAL = 1;
     query.bind(NUMBER_VAL, flight.number);
@@ -83,7 +83,7 @@ int FlightDataAccess::update_flight(const Flight& flight)
     const int ECO_VAL = 6;
     query.bind(ECO_VAL, flight.economicFee);
     const int BUSY_VAL = 7;
-    query.bind(BUSY_VAL, flight.busynessFee);
+    query.bind(BUSY_VAL, flight.businessFee);
     const int CURRENCY_VAL = 8;
     query.bind(CURRENCY_VAL, flight.currency);
     const int UUID_VAL = 9;
@@ -131,7 +131,7 @@ std::optional<Flight> FlightDataAccess::get_flight(const std::string& flight_uui
     SQLite::Statement query(
         m_db, "SELECT id, companyId, uuid, codeIcao, "
               "flightNumber, departureTown, arrivalTown, departureDate, arrivalDate, "
-              "economicPlaceFee, busynessPlaceFee, currency FROM Flights WHERE uuid = ?");
+              "economicPlaceFee, businessPlaceFee, currency FROM Flights WHERE uuid = ?");
     query.bind(1, flight_uuid);
     if (query.executeStep())
     {
@@ -146,7 +146,7 @@ std::optional<Flight> FlightDataAccess::get_flight(const std::string& flight_uui
             .departureDate = query.getColumn("departureDate").getString(),
             .arrivalDate   = query.getColumn("arrivalDate").getString(),
             .economicFee   = query.getColumn("economicPlaceFee").getDouble(),
-            .busynessFee   = query.getColumn("busynessPlaceFee").getDouble(),
+            .businessFee   = query.getColumn("businessPlaceFee").getDouble(),
             .currency      = query.getColumn("currency").getString()};
     }
     return std::nullopt;
@@ -157,7 +157,7 @@ std::vector<Flight> FlightDataAccess::list_flights()
     SQLite::Statement query(
         m_db, "SELECT id, companyId, uuid, codeIcao, "
               "flightNumber, departureTown, arrivalTown, departureDate, arrivalDate, "
-              "economicPlaceFee, busynessPlaceFee, currency FROM Flights");
+              "economicPlaceFee, businessPlaceFee, currency FROM Flights");
     std::vector<Flight> flights;
     while (query.executeStep())
     {
@@ -173,7 +173,7 @@ std::vector<Flight> FlightDataAccess::list_flights()
                 .departureDate = query.getColumn("departureDate").getString(),
                 .arrivalDate   = query.getColumn("arrivalDate").getString(),
                 .economicFee   = query.getColumn("economicPlaceFee").getDouble(),
-                .busynessFee   = query.getColumn("busynessPlaceFee").getDouble(),
+                .businessFee   = query.getColumn("businessPlaceFee").getDouble(),
                 .currency      = query.getColumn("currency").getString()});
     }
     return flights;
@@ -203,7 +203,7 @@ int FlightDataAccess::create_table()
                 "departureDate TEXT NOT NULL, "
                 "arrivalDate TEXT NOT NULL, "
                 "economicPlaceFee REAL NOT NULL, "
-                "busynessPlaceFee REAL NOT NULL, "
+                "businessPlaceFee REAL NOT NULL, "
                 "currency TEXT, "
                 "CONSTRAINT fk_company FOREIGN KEY (companyId) REFERENCES Companies(id)"
                 "   ON DELETE RESTRICT"

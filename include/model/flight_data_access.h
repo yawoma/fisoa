@@ -19,7 +19,7 @@ struct Flight
     std::string departureDate;
     std::string arrivalDate;
     double      economicFee;
-    double      busynessFee;
+    double      businessFee;
     std::string currency;    //< the default one would be euro
 };
 
